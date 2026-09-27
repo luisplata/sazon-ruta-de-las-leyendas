@@ -191,7 +191,7 @@ jobs:
           projectPath: .
           unityVersion: ${{ env.UNITY_VERSION }}
           targetPlatform: StandaloneWindows64
-          buildName: GameJamUni2-Windows
+          buildName: Sazon-Ruta-de-Las-Leyendas-Windows
           buildsPath: build
           # IL2CPP container fix: the `-3` image for 6000.3.10f1 crashes natively (exit 255,
           # broken container user profile — CreateDirectory Caches failed). Revision 3.2.x is
@@ -222,14 +222,14 @@ jobs:
       - name: Package Windows
         shell: pwsh
         run: |
-          $asset = "GameJamUni2-Windows-${env:TAG}-${env:SHA7}.zip"
+          $asset = "Sazon-Ruta-de-Las-Leyendas-Windows-${env:TAG}-${env:SHA7}.zip"
           Compress-Archive -Path "build/StandaloneWindows64/*" -DestinationPath $asset -Force
           Get-ChildItem $asset | Format-List Length,Name
 
       - uses: actions/upload-artifact@v4
         with:
-          name: GameJamUni2-Windows-${{ needs.validate.outputs.sha7 }}
-          path: GameJamUni2-Windows-*.zip
+          name: Sazon-Ruta-de-Las-Leyendas-Windows-${{ needs.validate.outputs.sha7 }}
+          path: Sazon-Ruta-de-Las-Leyendas-Windows-*.zip
           retention-days: 1
           if-no-files-found: error
 
@@ -312,7 +312,7 @@ jobs:
           projectPath: .
           unityVersion: ${{ env.UNITY_VERSION }}
           targetPlatform: Android
-          buildName: GameJamUni2-Android
+          buildName: Sazon-Ruta-de-Las-Leyendas-Android
           buildsPath: build
           # Debug-signed APK (no release keystore yet). Add the ANDROID_KEYSTORE_* secrets
           # and the androidKeystore* options below when publishing to the Play Store.
@@ -335,14 +335,14 @@ jobs:
       - name: Package Android
         shell: bash
         run: |
-          asset="GameJamUni2-Android-${TAG}-${SHA7}.zip"
+          asset="Sazon-Ruta-de-Las-Leyendas-Android-${TAG}-${SHA7}.zip"
           (cd build/Android && zip -qr ../../"${asset}" .)
           ls -lh "${asset}"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: GameJamUni2-Android-${{ needs.validate.outputs.sha7 }}
-          path: GameJamUni2-Android-*.zip
+          name: Sazon-Ruta-de-Las-Leyendas-Android-${{ needs.validate.outputs.sha7 }}
+          path: Sazon-Ruta-de-Las-Leyendas-Android-*.zip
           retention-days: 1
           if-no-files-found: error
 
@@ -360,18 +360,18 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: release-assets
-          pattern: GameJamUni2-*
+          pattern: Sazon-Ruta-de-Las-Leyendas-*
           merge-multiple: true
 
       - name: Verify release assets present
         run: |
           set -euo pipefail
           ls -lh release-assets/
-          if [ -z "$(find release-assets -maxdepth 1 -name "GameJamUni2-Windows-*.zip" -print -quit)" ]; then
+          if [ -z "$(find release-assets -maxdepth 1 -name "Sazon-Ruta-de-Las-Leyendas-Windows-*.zip" -print -quit)" ]; then
             echo "::error::Missing release asset for Windows — refusing to publish."
             exit 1
           fi
-          if [ "${{ inputs.buildAndroid }}" = "true" ] && [ -z "$(find release-assets -maxdepth 1 -name "GameJamUni2-Android-*.zip" -print -quit)" ]; then
+          if [ "${{ inputs.buildAndroid }}" = "true" ] && [ -z "$(find release-assets -maxdepth 1 -name "Sazon-Ruta-de-Las-Leyendas-Android-*.zip" -print -quit)" ]; then
             echo "::error::Missing release asset for Android — refusing to publish."
             exit 1
           fi
@@ -381,12 +381,12 @@ jobs:
         with:
           tag_name: ${{ needs.validate.outputs.tag }}
           target_commitish: ${{ github.sha }}
-          name: GameJamUni2 ${{ needs.validate.outputs.tag }}
+          name: 'Sazón: Ruta de las Leyendas ${{ needs.validate.outputs.tag }}'
           generate_release_notes: true
           overwrite_files: true
           fail_on_unmatched_files: true
           files: |
-            release-assets/GameJamUni2-*.zip
+            release-assets/Sazon-Ruta-de-Las-Leyendas-*.zip
 
   # deploy-itch:
   #   name: Deploy to Itch.io
@@ -403,14 +403,14 @@ jobs:
   #       uses: actions/download-artifact@v4
   #       with:
   #         path: release-assets
-  #         pattern: GameJamUni2-*
+  #         pattern: Sazon-Ruta-de-Las-Leyendas-*
   #         merge-multiple: true
   #
   #     - name: Unpack for Butler
   #       run: |
   #         set -euo pipefail
   #         mkdir -p itch/Windows
-  #         unzip -q "release-assets/GameJamUni2-Windows-${TAG}-${SHA7}.zip" -d itch/Windows
+  #         unzip -q "release-assets/Sazon-Ruta-de-Las-Leyendas-Windows-${TAG}-${SHA7}.zip" -d itch/Windows
   #         ls -R itch | head -n 100 || true
   #
   #     - name: Deploy Windows

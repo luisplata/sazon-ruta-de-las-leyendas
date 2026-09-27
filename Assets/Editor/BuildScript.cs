@@ -19,12 +19,12 @@ public static class BuildScript
 
     public static void BuildWindows()
     {
-        BuildPlayer(BuildTarget.StandaloneWindows64, WindowsDir, "GameJamUni2.exe");
+        BuildPlayer(BuildTarget.StandaloneWindows64, WindowsDir, "Sazon-Ruta-de-Las-Leyendas.exe");
     }
 
     public static void BuildAndroid()
     {
-        BuildPlayer(BuildTarget.Android, AndroidDir, "GameJamUni2.apk");
+        BuildPlayer(BuildTarget.Android, AndroidDir, "Sazon-Ruta-de-Las-Leyendas.apk");
     }
 
     private static void BuildPlayer(BuildTarget target, string outputDir, string fileName)
