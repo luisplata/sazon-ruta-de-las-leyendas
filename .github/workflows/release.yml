@@ -388,39 +388,46 @@ jobs:
           files: |
             release-assets/Sazon-Ruta-de-Las-Leyendas-*.zip
 
-  # deploy-itch:
-  #   name: Deploy to Itch.io
-  #   needs: [publish, validate]
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #     actions: read
-  #   env:
-  #     TAG: ${{ needs.validate.outputs.tag }}
-  #     SHA7: ${{ needs.validate.outputs.sha7 }}
-  #   steps:
-  #     - name: Download release assets
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         path: release-assets
-  #         pattern: Sazon-Ruta-de-Las-Leyendas-*
-  #         merge-multiple: true
-  #
-  #     - name: Unpack for Butler
-  #       run: |
-  #         set -euo pipefail
-  #         mkdir -p itch/Windows
-  #         unzip -q "release-assets/Sazon-Ruta-de-Las-Leyendas-Windows-${TAG}-${SHA7}.zip" -d itch/Windows
-  #         ls -R itch | head -n 100 || true
-  #
-  #     - name: Deploy Windows
-  #       uses: josephbmanley/butler-publish-itchio-action@master
-  #       env:
-  #         BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
-  #         CHANNEL: windows
-  #         ITCH_GAME: your-itch-game
-  #         ITCH_USER: your-itch-user
-  #         PACKAGE: itch/Windows
-  # Deploy to Itch.io commented out — no itch.io page yet. Only GitHub Release is needed for now.
-  # Re-enable when the page exists: set ITCH_GAME/ITCH_USER to real values and add the
-  # BUTLER_CREDENTIALS secret.
+  deploy-itch:
+    name: Deploy to Itch.io
+    needs: [publish, validate]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    env:
+      TAG: ${{ needs.validate.outputs.tag }}
+      SHA7: ${{ needs.validate.outputs.sha7 }}
+    steps:
+      - name: Download release assets
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          pattern: Sazon-Ruta-de-Las-Leyendas-*
+          merge-multiple: true
+
+      - name: Unpack for Butler
+        run: |
+          set -euo pipefail
+          mkdir -p itch/Windows itch/Android
+          unzip -q "release-assets/Sazon-Ruta-de-Las-Leyendas-Windows-${TAG}-${SHA7}.zip" -d itch/Windows
+          unzip -q "release-assets/Sazon-Ruta-de-Las-Leyendas-Android-${TAG}-${SHA7}.zip" -d itch/Android
+          ls -R itch | head -n 100 || true
+
+      - name: Deploy Windows (itch)
+        uses: josephbmanley/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          CHANNEL: windows
+          ITCH_GAME: maid-cafe-combo-manager
+          ITCH_USER: peryloth
+          PACKAGE: itch/Windows
+
+      - name: Deploy Android (itch)
+        uses: josephbmanley/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          CHANNEL: android
+          ITCH_GAME: maid-cafe-combo-manager
+          ITCH_USER: peryloth
+          PACKAGE: itch/Android
