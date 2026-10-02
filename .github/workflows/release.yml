@@ -16,6 +16,11 @@ on:
         required: false
         default: true
         type: boolean
+      buildWebGL:
+        description: 'Build the WebGL build too (default true)'
+        required: false
+        default: true
+        type: boolean
 
 permissions: {}
 
@@ -346,9 +351,130 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+  build-webgl:
+    name: Build WebGL
+    if: inputs.buildWebGL
+    needs: [validate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      actions: write
+    env:
+      TAG: ${{ needs.validate.outputs.tag }}
+      SHA7: ${{ needs.validate.outputs.sha7 }}
+      UNITY_VERSION: 6000.3.10f1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Create LFS file list
+        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+
+      - name: Restore LFS cache
+        uses: actions/cache@v4
+        id: lfs-cache
+        with:
+          path: .git/lfs
+          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+
+      - name: Git LFS Pull
+        run: git lfs pull
+
+      - name: Clean LFS pull side effects
+        run: |
+          git add .
+          git reset --hard
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/powershell
+          df -h
+
+      # CI-only: remove Unity AI Assistant packages (see build-windows for rationale).
+      - name: Remove AI Assistant packages (CI only)
+        shell: bash
+        run: |
+          python3 - <<'EOF'
+          import json
+          p = "Packages/manifest.json"
+          with open(p) as f:
+              data = json.load(f)
+          data["dependencies"].pop("com.unity.ai.assistant", None)
+          data["dependencies"].pop("com.unity.ai.inference", None)
+          with open(p, "w") as f:
+              json.dump(data, f, indent=2)
+          print("AI Assistant removed from CI manifest")
+          EOF
+          git add Packages/manifest.json Packages/packages-lock.json
+          git -c user.name="CI" -c user.email="ci@github.com" commit -m "ci: remove AI assistant for build" --allow-empty || true
+          git status --porcelain
+
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-WebGL-${{ hashFiles('.lfs-assets-id', 'Packages/packages-lock.json') }}-${{ github.run_id }}
+          restore-keys: |
+            Library-WebGL-
+            Library-
+
+      - name: Build WebGL
+        uses: game-ci/unity-builder@v4.8.2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: .
+          unityVersion: ${{ env.UNITY_VERSION }}
+          targetPlatform: WebGL
+          buildName: Sazon-Ruta-de-Las-Leyendas-WebGL
+          buildsPath: build
+          # Same revision convention as the Android job. If this exact webgl image
+          # revision does not exist on Docker Hub, drop customImage (default image).
+          customImage: unityci/editor:ubuntu-6000.3.10f1-webgl-3.2.2
+
+      - name: Upload build diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-build-diagnostics-${{ github.run_id }}
+          path: |
+            Library/Logs/
+            Logs/
+            build/
+          retention-days: 1
+          if-no-files-found: warn
+
+      - name: Strip DoNotShip folders
+        shell: bash
+        run: |
+          find build/WebGL -type d \( -name "*DoNotShip*" -o -name "*BackUpThisFolder*" \) -prune -exec rm -rf {} + || true
+
+      - name: Package WebGL
+        shell: bash
+        run: |
+          asset="Sazon-Ruta-de-Las-Leyendas-WebGL-${TAG}-${SHA7}.zip"
+          (cd build/WebGL && zip -qr ../../"${asset}" .)
+          ls -lh "${asset}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Sazon-Ruta-de-Las-Leyendas-WebGL-${{ needs.validate.outputs.sha7 }}
+          path: Sazon-Ruta-de-Las-Leyendas-WebGL-*.zip
+          retention-days: 1
+          if-no-files-found: error
+
   publish:
     name: Publish GitHub Release
-    needs: [build-windows, build-android, validate]
+    needs: [build-windows, build-android, build-webgl, validate]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -373,6 +499,10 @@ jobs:
           fi
           if [ "${{ inputs.buildAndroid }}" = "true" ] && [ -z "$(find release-assets -maxdepth 1 -name "Sazon-Ruta-de-Las-Leyendas-Android-*.zip" -print -quit)" ]; then
             echo "::error::Missing release asset for Android — refusing to publish."
+            exit 1
+          fi
+          if [ "${{ inputs.buildWebGL }}" = "true" ] && [ -z "$(find release-assets -maxdepth 1 -name "Sazon-Ruta-de-Las-Leyendas-WebGL-*.zip" -print -quit)" ]; then
+            echo "::error::Missing release asset for WebGL — refusing to publish."
             exit 1
           fi
 
@@ -415,19 +545,28 @@ jobs:
           ls -R itch | head -n 100 || true
 
       - name: Deploy Windows (itch)
-        uses: josephbmanley/butler-publish-itchio-action@master
+        uses: yeslayla/butler-publish-itchio-action@master
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
           CHANNEL: windows
           ITCH_GAME: maid-cafe-combo-manager
-          ITCH_USER: peryloth
+          ITCH_USER: PeryLoth
           PACKAGE: itch/Windows
 
       - name: Deploy Android (itch)
-        uses: josephbmanley/butler-publish-itchio-action@master
+        uses: yeslayla/butler-publish-itchio-action@master
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
           CHANNEL: android
           ITCH_GAME: maid-cafe-combo-manager
-          ITCH_USER: peryloth
+          ITCH_USER: PeryLoth
           PACKAGE: itch/Android
+
+      - name: Deploy WebGL (itch)
+        uses: yeslayla/butler-publish-itchio-action@master
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
+          CHANNEL: webgl
+          ITCH_GAME: maid-cafe-combo-manager
+          ITCH_USER: PeryLoth
+          PACKAGE: release-assets/Sazon-Ruta-de-Las-Leyendas-WebGL-${{ env.TAG }}-${{ env.SHA7 }}.zip
