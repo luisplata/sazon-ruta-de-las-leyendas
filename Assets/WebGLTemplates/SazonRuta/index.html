@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Sazón: Ruta de las Leyendas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        background: linear-gradient(160deg, #150f0d 0%, #2b1a12 45%, #3a2417 100%);
+        color: #f3e3c9;
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        overflow: hidden;
+        box-sizing: border-box;
+        padding: 12px;
+      }
+      #game-header { text-align: center; padding: 10px 16px 12px; }
+      #game-header h1 {
+        margin: 0;
+        font-size: clamp(18px, 3.2vw, 32px);
+        letter-spacing: 1px;
+        color: #ffb347;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, .65);
+      }
+      #game-header p { margin: 5px 0 0; font-size: clamp(11px, 1.4vw, 14px); opacity: .78; }
+      #unity-container {
+        position: relative;
+        width: min(96vw, calc((100vh - 140px) * 16 / 9));
+        aspect-ratio: 16 / 9;
+      }
+      #unity-canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: #14100d;
+        border-radius: 10px;
+        box-shadow: 0 12px 44px rgba(0, 0, 0, .55);
+      }
+      #unity-loading-bar {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 62%;
+        text-align: center;
+      }
+      #unity-progress-bar-empty {
+        height: 10px;
+        background: rgba(255, 255, 255, .12);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      #unity-progress-bar-full {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #ffb347, #e74c3c);
+        border-radius: 999px;
+        transition: width .2s ease;
+      }
+      #unity-warning { color: #ffd54f; font-size: 13px; margin-top: 8px; }
+      #unity-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: min(96vw, calc((100vh - 140px) * 16 / 9));
+        margin-top: 10px;
+        color: rgba(243, 227, 201, .7);
+        font-size: 12px;
+      }
+      #unity-fullscreen-button {
+        cursor: pointer;
+        background: rgba(255, 255, 255, .08);
+        border: 1px solid rgba(255, 255, 255, .22);
+        color: #f3e3c9;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-family: inherit;
+      }
+      #unity-fullscreen-button:hover { background: rgba(255, 179, 71, .22); }
+    </style>
+  </head>
+  <body>
+    <div id="game-header">
+      <h1>🍲 Sazón: Ruta de las Leyendas</h1>
+      <p>Duelos de cocina contra las leyendas de Latinoamérica</p>
+    </div>
+    <div id="unity-container">
+      <canvas id="unity-canvas" width={{{ WIDTH }}} height={{{ HEIGHT }}} tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+        <div id="unity-warning"></div>
+      </div>
+    </div>
+    <div id="unity-footer">
+      <span id="unity-build-title">{{{ PRODUCT_NAME }}} v{{{ PRODUCT_VERSION }}}</span>
+      <button id="unity-fullscreen-button" type="button">⛶ Pantalla completa</button>
+    </div>
+    <script>
+      var canvas = document.querySelector("#unity-canvas");
+
+      function unityShowBanner(msg, type) {
+        var warningBanner = document.querySelector("#unity-warning");
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+        frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+#if USE_THREADS
+        workerUrl: buildUrl + "/{{{ WORKER_FILENAME }}}",
+#endif
+#if USE_WASM
+        codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+#endif
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+        productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+        productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+        showBanner: unityShowBanner,
+      };
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+      }
+
+      document.querySelector("#unity-loading-bar").style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+        }).then((unityInstance) => {
+          document.querySelector("#unity-loading-bar").style.display = "none";
+          document.querySelector("#unity-fullscreen-button").onclick = () => {
+            unityInstance.SetFullscreen(1);
+          };
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>

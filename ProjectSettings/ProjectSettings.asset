@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: luisplata
-  productName: "Sazón: Ruta de las Leyendas"
+  productName: "Saz\xF3n: Ruta de las Leyendas"
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -763,7 +763,7 @@ PlayerSettings:
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
-  webGLTemplate: APPLICATION:Default
+  webGLTemplate: PROJECT:SazonRuta
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
   webGLCompressionFormat: 0
@@ -813,9 +813,9 @@ PlayerSettings:
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: "Sazón: Ruta de las Leyendas"
+  metroApplicationDescription: "Saz\xF3n: Ruta de las Leyendas"
   wsaImages: {}
-  metroTileShortName: Sazón
+  metroTileShortName: "Saz\xF3n"
   metroTileShowName: 0
   metroMediumTileShowName: 0
   metroLargeTileShowName: 0
