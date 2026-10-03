@@ -15,10 +15,19 @@ using UnityEngine;
 public class CameraFit : MonoBehaviour
 {
     /// <summary>
-    /// Design width: visible world width at 16:9 with ortho size 5 (10 units
-    /// tall → 10 * 16/9 ≈ 17.78). Tune if the scene's authored width differs.
+    /// Authored framing aspect (16:9 default). The camera keeps the design
+    /// WIDTH fully visible at any screen aspect and adapts the vertical
+    /// (fit-width): orthoSize = baseOrthoSize * designAspect / aspect.
     /// </summary>
-    [SerializeField] private float designWidth = 17.78f;
+    [Tooltip("Aspecto de diseño esperado, p.ej. 16/9. La cámara mantiene el ancho visible y adapta el alto.")]
+    [SerializeField] private float designAspect = 16f / 9f;
+
+    /// <summary>
+    /// Orthographic size at the design aspect (the scene is authored with
+    /// ortho 5 → 10 world units tall at 16:9).
+    /// </summary>
+    [Tooltip("Ortho size en el aspect de diseño (escena autorada con ortho 5).")]
+    [SerializeField] private float baseOrthoSize = 5f;
 
     private Camera _cam;
 
@@ -35,7 +44,7 @@ public class CameraFit : MonoBehaviour
         float aspect = _cam.aspect;
         if (aspect <= 0.01f) return;
 
-        float target = (designWidth / 2f) / aspect;
+        float target = baseOrthoSize * designAspect / aspect;
         if (!Mathf.Approximately(_cam.orthographicSize, target))
             _cam.orthographicSize = target;
     }
