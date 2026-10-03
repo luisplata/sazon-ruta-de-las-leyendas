@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RecipeData
   dishName: Arroz de Coco con Pescado
   icon: "\U0001F35A"
+  art: {fileID: 21300000, guid: a183dbd517500b24c9cd883260104ffc, type: 2}
   kind: 1
   ingredients:
   - {fileID: 11400000, guid: 5bbbeb30845991d4180e60489d962b33, type: 2}

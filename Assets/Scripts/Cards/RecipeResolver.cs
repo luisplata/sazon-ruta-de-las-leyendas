@@ -13,14 +13,16 @@ public readonly struct ResolutionResult
     public readonly string Icon;
     public readonly string Reaction;
     public readonly Color Color;
+    public readonly Sprite Art;
 
-    public ResolutionResult(RecipeKind kind, string dishName, string icon, string reaction, Color color)
+    public ResolutionResult(RecipeKind kind, string dishName, string icon, string reaction, Color color, Sprite art = null)
     {
         Kind = kind;
         DishName = dishName;
         Icon = icon;
         Reaction = reaction;
         Color = color;
+        Art = art;
     }
 }
 
@@ -68,7 +70,8 @@ public static class RecipeResolver
                         dishName: recipe.dishName,
                         icon: recipe.icon,
                         reaction: recipe.reactionText,
-                        color: GetColor(recipe.kind));
+                        color: GetColor(recipe.kind),
+                        art: recipe.art);
                 }
             }
         }
@@ -97,7 +100,8 @@ public static class RecipeResolver
                             dishName: recipe.dishName,
                             icon: recipe.icon,
                             reaction: recipe.reactionText,
-                            color: PresentedColor);
+                            color: PresentedColor,
+                            art: recipe.art);
                     }
                 }
             }

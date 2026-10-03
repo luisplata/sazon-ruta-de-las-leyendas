@@ -187,7 +187,7 @@ public class HandController : MonoBehaviour
         var view = Instantiate(dishCardPrefab, dishRoot);
         var rt = (RectTransform)view.transform;
         rt.anchoredPosition = Vector2.zero;
-        view.SetDish(result.DishName, result.Icon, result.Color);
+        view.SetDish(result.DishName, result.Icon, result.Color, result.Art);
         _dishCard = view;
     }
 

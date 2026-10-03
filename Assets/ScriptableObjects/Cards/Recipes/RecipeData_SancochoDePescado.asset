@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RecipeData
   dishName: Sancocho de Pescado
   icon: "\U0001F372"
+  art: {fileID: 21300000, guid: b38b10a204c6333498d4e59ed77e5706, type: 2}
   kind: 1
   ingredients:
   - {fileID: 11400000, guid: 1df87e4ed08f9b14b8695bf4dd50ad8f, type: 2}

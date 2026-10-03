@@ -21,12 +21,35 @@ public class DishView : MonoBehaviour
     [SerializeField] TMP_Text nameText;
     [SerializeField] TMP_Text iconText;
 
-    /// <summary>Applies the resolved dish's identity and kind color.</summary>
-    public void SetDish(string dishName, string icon, Color color)
+    /// <summary>Optional dish-art sprite slot; sits ABOVE the kind-tinted bg, below the name.</summary>
+    [SerializeField] Image artImage;
+
+    /// <summary>
+    /// Applies the resolved dish's identity and kind color. When art is
+    /// present (and the artImage slot is wired) the sprite shows instead of
+    /// the emoji icon; a null/unwired art falls back to the emoji.
+    /// </summary>
+    public void SetDish(string dishName, string icon, Color color, Sprite art = null)
     {
         if (image != null) image.color = color;
         if (nameText != null) nameText.text = dishName;
-        if (iconText != null) iconText.text = icon;
+
+        if (artImage != null)
+        {
+            artImage.sprite = art;
+            artImage.preserveAspect = true;
+            artImage.enabled = art != null;
+        }
+
+        // Emoji is the fallback: shown when there is no art, or when the art
+        // slot is unwired (artImage == null) so a partially wired prefab still
+        // displays something.
+        bool showIcon = art == null || artImage == null;
+        if (iconText != null)
+        {
+            iconText.text = icon;
+            iconText.enabled = showIcon;
+        }
     }
 
     /// <summary>

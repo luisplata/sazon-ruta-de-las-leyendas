@@ -33,6 +33,9 @@ public class RecipeData : ScriptableObject
     [Tooltip("Emoji glyph shown on the result card (e.g. '🌮').")]
     public string icon;
 
+    [Tooltip("Optional art sprite shown on the dish result card.")]
+    public Sprite art;
+
     [Tooltip("Kind of dish: Star/Normal/Cursed. Filler/Fail are runtime-only and warned on.")]
     public RecipeKind kind;
 

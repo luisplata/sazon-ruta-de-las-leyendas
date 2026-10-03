@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RecipeData
   dishName: Elote Asado
   icon: "\U0001F33D"
+  art: {fileID: 21300000, guid: d88fb291d174a244298defcbc480a4a4, type: 2}
   kind: 1
   ingredients:
   - {fileID: 11400000, guid: 73ddc3817602f5f408165551adaec29f, type: 2}
