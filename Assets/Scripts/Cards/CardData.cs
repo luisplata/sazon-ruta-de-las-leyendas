@@ -25,9 +25,6 @@ public class CardData : ScriptableObject
     [Tooltip("Name shown on the card (e.g. 'Maíz').")]
     public string displayName;
 
-    [Tooltip("Emoji glyph shown on the card (e.g. '🌽').")]
-    public string icon;
-
     [Tooltip("Optional art sprite (future-proof; not used by the visual base).")]
     public Sprite art;
 

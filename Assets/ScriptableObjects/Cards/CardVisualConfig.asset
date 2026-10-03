@@ -206,3 +206,6 @@ MonoBehaviour:
   complementoColor: {r: 0.2, g: 0.7, b: 0.3, a: 1}
   sazonColor: {r: 0.95, g: 0.8, b: 0.15, a: 1}
   cardPrefab: {fileID: 4622126435625404413, guid: 16439c25e91460341b8927e7ba177c94, type: 3}
+  bgSpriteFotRoleBase: {fileID: 21300000, guid: 370bd358133615746b0f6c6aea82e199, type: 2}
+  bgSpriteFotRoleComplemento: {fileID: 21300000, guid: c9321d303cf9d01438cab5891ab1180b, type: 2}
+  bgSpriteFotRoleSazon: {fileID: 21300000, guid: 2fe1d08321f978f46966c1b1e5f9fd4a, type: 2}

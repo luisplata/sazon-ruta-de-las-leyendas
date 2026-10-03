@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   role: 2
   displayName: Coco
-  icon: "\U0001F965"
-  art: {fileID: -7152582409589241659, guid: abaf38f592b8bc048b1de15fda102b9c, type: 3}
+  art: {fileID: 21300000, guid: 0dc2c8d2c4e077a4fbd8c21613dc543c, type: 2}

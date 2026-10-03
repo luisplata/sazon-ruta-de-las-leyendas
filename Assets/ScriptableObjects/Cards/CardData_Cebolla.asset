@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   role: 1
   displayName: Cebolla
-  icon: "\U0001F9C5"
-  art: {fileID: 0}
+  art: {fileID: 21300000, guid: 24c4c43fc58eba848a155f2c34484b0a, type: 2}

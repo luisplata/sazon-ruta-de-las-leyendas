@@ -96,7 +96,7 @@ public class MarketController : MonoBehaviour
 
         var label = button.GetComponentInChildren<TMP_Text>();
         if (label != null)
-            label.text = $"{item.card.displayName} {item.card.icon}  x{item.quantity}  ${item.price}";
+            label.text = $"{item.card.displayName}  x{item.quantity}  ${item.price}";
 
         var itemCopy = item; // stable closure
         button.onClick.AddListener(() => Buy(itemCopy));

@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   role: 1
   displayName: "Pl\xE1tano"
-  icon: "\U0001F34C"
-  art: {fileID: -7152582409589241659, guid: abaf38f592b8bc048b1de15fda102b9c, type: 3}
+  art: {fileID: 21300000, guid: e64419d8010455442b64e8451111eb55, type: 2}

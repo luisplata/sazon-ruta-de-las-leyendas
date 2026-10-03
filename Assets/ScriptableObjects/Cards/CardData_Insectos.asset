@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   role: 1
   displayName: Insectos
-  icon: "\U0001F997"
-  art: {fileID: 0}
+  art: {fileID: 21300000, guid: fba6ca37c8c25a84191f1fb54b66eb6a, type: 2}

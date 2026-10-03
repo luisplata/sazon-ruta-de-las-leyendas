@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 /// <summary>
 /// One card in the hand. Owns its own movement (deal-in, re-layout,
@@ -14,7 +15,8 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     [SerializeField] RectTransform rect;
     [SerializeField] CanvasGroup group;
     [SerializeField] TMPro.TMP_Text nameText;
-    [SerializeField] TMPro.TMP_Text iconText;
+    [SerializeField] private Image border;
+    [SerializeField] private Image icon;
 
     HandController _hand;
     CardVisualConfig _config;
@@ -38,7 +40,8 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     /// Called once by HandController at spawn. Caches refs, applies the
     /// configured card size and colors, and records the initial slot.
     /// </summary>
-    public void Init(HandController hand, CardVisualConfig config, DropZone center, DropZone corner, int slotIndex, PlayerView playerView = null)
+    public void Init(HandController hand, CardVisualConfig config, DropZone center, DropZone corner, int slotIndex,
+        PlayerView playerView = null)
     {
         if (rect == null) rect = GetComponent<RectTransform>();
         if (group == null) group = GetComponent<CanvasGroup>();
@@ -49,10 +52,11 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         _corner = corner;
         _slotIndex = slotIndex;
         _playerView = playerView;
+        if (border == null) border = GetComponent<Image>();
+        if (icon == null) icon = GetComponent<Image>();
 
         rect.sizeDelta = config.cardSize;
-        var image = GetComponent<UnityEngine.UI.Image>();
-        if (image != null) image.color = config.cardColor;
+        if (icon != null) icon.color = config.cardColor;
         if (nameText != null) nameText.color = config.cardTextColor;
     }
 
@@ -65,9 +69,8 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     {
         Data = data;
         if (nameText != null) nameText.text = data.displayName;
-        if (iconText != null) iconText.text = data.icon;
-        var image = GetComponent<UnityEngine.UI.Image>();
-        if (image != null) image.color = _config.GetRoleColor(data.role);
+        if (icon != null) icon.sprite = data.art;
+        if (border != null) border.sprite = _config.GetBgSpriteForRole(data.role);
     }
 
     /// <summary>
@@ -82,9 +85,9 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         StopMove();
         _moveRoutine = StartCoroutine(
             MoveTo(_config.dealOrigin,
-                   _hand.GetSlotPosition(_slotIndex, _config.maxHandSize),
-                   _config.dealDuration,
-                   _config.dealEasingCurve));
+                _hand.GetSlotPosition(_slotIndex, _config.maxHandSize),
+                _config.dealDuration,
+                _config.dealEasingCurve));
     }
 
     /// <summary>
@@ -108,8 +111,8 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         StopMove();
         _moveRoutine = StartCoroutine(
             MoveTo(rect.anchoredPosition, target,
-                   _config.reLayoutDuration,
-                   _config.reLayoutEasingCurve));
+                _config.reLayoutDuration,
+                _config.reLayoutEasingCurve));
     }
 
     /// <summary>
@@ -122,9 +125,9 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         StopMove();
         _moveRoutine = StartCoroutine(
             MoveTo(rect.anchoredPosition,
-                   _hand.GetSlotPosition(_slotIndex, _hand.Count),
-                   _config.reLayoutDuration,
-                   _config.reLayoutEasingCurve));
+                _hand.GetSlotPosition(_slotIndex, _hand.Count),
+                _config.reLayoutDuration,
+                _config.reLayoutEasingCurve));
     }
 
     /// <summary>
@@ -196,11 +199,13 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             if (!_hand.TryParkInZone(this, _center)) ReturnToSlot();
             return;
         }
+
         if (_corner != null && _corner.Contains(e.position))
         {
             if (!_hand.TryParkInZone(this, _corner)) ReturnToSlot();
             return;
         }
+
         ReturnToSlot();
     }
 
@@ -223,6 +228,7 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             rect.localScale = Vector3.one * Mathf.Lerp(1f, _config.parkedScale, _config.parkEasingCurve.Evaluate(p));
             yield return null;
         }
+
         rect.anchoredPosition = target;
         rect.localScale = Vector3.one * _config.parkedScale;
 
@@ -250,6 +256,7 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             rect.localScale = Vector3.one * (startScale * _config.centerDiscardScaleCurve.Evaluate(p));
             yield return null;
         }
+
         rect.anchoredPosition = target;
         rect.localScale = Vector3.zero;
 
@@ -276,6 +283,7 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             rect.localScale = Vector3.one * (startScale * _config.cornerDiscardScaleCurve.Evaluate(p));
             yield return null;
         }
+
         rect.localScale = Vector3.zero;
 
         _zone.Release(this);
@@ -290,6 +298,7 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             rect.anchoredPosition = Vector2.Lerp(start, target, easing.Evaluate(Mathf.Clamp01(t)));
             yield return null;
         }
+
         rect.anchoredPosition = target;
     }
 
