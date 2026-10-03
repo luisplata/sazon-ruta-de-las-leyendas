@@ -549,7 +549,7 @@ jobs:
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
           CHANNEL: windows
-          ITCH_GAME: maid-cafe-combo-manager
+          ITCH_GAME: sazon-ruta-de-las-leyendas
           ITCH_USER: PeryLoth
           PACKAGE: itch/Windows
 
@@ -558,7 +558,7 @@ jobs:
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
           CHANNEL: android
-          ITCH_GAME: maid-cafe-combo-manager
+          ITCH_GAME: sazon-ruta-de-las-leyendas
           ITCH_USER: PeryLoth
           PACKAGE: itch/Android
 
@@ -567,6 +567,6 @@ jobs:
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
           CHANNEL: webgl
-          ITCH_GAME: maid-cafe-combo-manager
+          ITCH_GAME: sazon-ruta-de-las-leyendas
           ITCH_USER: PeryLoth
           PACKAGE: release-assets/Sazon-Ruta-de-Las-Leyendas-WebGL-${{ env.TAG }}-${{ env.SHA7 }}.zip
