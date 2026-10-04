@@ -27,15 +27,27 @@ public class DishView : MonoBehaviour
     /// <summary>Card-frame Image (same visual role as CardView.border): tinted by the dish kind color.</summary>
     [SerializeField] Image border;
 
+    [Header("Frame per result kind (one slot per color; same sprite for now)")]
+    [SerializeField] Sprite frameStar;
+    [SerializeField] Sprite frameNormal;
+    [SerializeField] Sprite frameCursed;
+    [SerializeField] Sprite frameFiller;
+    [SerializeField] Sprite frameFail;
+    [SerializeField] Sprite framePresented;
+
     /// <summary>
     /// Applies the resolved dish's identity and kind color. When art is
     /// present (and the artImage slot is wired) the sprite shows instead of
     /// the emoji icon; a null/unwired art falls back to the emoji.
     /// </summary>
-    public void SetDish(string dishName, string icon, Color color, Sprite art = null)
+    public void SetDish(string dishName, string icon, Color color, Sprite art = null, RecipeKind kind = RecipeKind.Normal)
     {
         if (image != null) image.color = color;
-        if (border != null) border.color = color;
+        if (border != null)
+        {
+            border.sprite = FrameForKind(kind);
+            border.color = color;
+        }
         if (nameText != null) nameText.text = dishName;
 
         if (artImage != null)
@@ -53,6 +65,20 @@ public class DishView : MonoBehaviour
         {
             iconText.text = icon;
             iconText.enabled = showIcon;
+        }
+    }
+
+    /// <summary>Frame sprite for a result kind (per-color slots; same sprite for now).</summary>
+    Sprite FrameForKind(RecipeKind kind)
+    {
+        switch (kind)
+        {
+            case RecipeKind.Star: return frameStar;
+            case RecipeKind.Cursed: return frameCursed;
+            case RecipeKind.Filler: return frameFiller;
+            case RecipeKind.Fail: return frameFail;
+            case RecipeKind.Presented: return framePresented;
+            default: return frameNormal;
         }
     }
 
