@@ -34,4 +34,13 @@ public class LevelConfig : ScriptableObject
 
     [Tooltip("Market catalog offered before this level. Null ⇒ Listo-only Market.")]
     public MarketConfig marketConfig;
+
+    [Tooltip("Full-scene backdrop art. Null = tinted placeholder square (per-level fallback color).")]
+    public Sprite background;
+
+    [Tooltip("Midground layer art, in front of the backdrop and behind the characters. Null = tinted placeholder square.")]
+    public Sprite midground;
+
+    [Tooltip("Enemy character art. Null = tinted placeholder square.")]
+    public Sprite enemyArt;
 }

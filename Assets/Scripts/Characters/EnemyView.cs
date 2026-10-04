@@ -19,6 +19,12 @@ public class EnemyView : MonoBehaviour
     [Tooltip("Optional placeholder tint.")]
     [SerializeField] SpriteRenderer sprite;
 
+    [Tooltip("Optional real-art override. When set, replaces the placeholder square and bypasses the tint.")]
+    [SerializeField] Sprite art;
+
+    /// <summary>Runtime hook for the art override (set by GameLoopController from the level's art slot).</summary>
+    public Sprite Art { get => art; set => art = value; }
+
     [Tooltip("Red-ish placeholder tint.")]
     [SerializeField] Color tint = new Color(0.95f, 0.5f, 0.45f);
 
@@ -39,7 +45,16 @@ public class EnemyView : MonoBehaviour
 
     void Awake()
     {
-        if (sprite != null) sprite.color = tint;
+        if (sprite == null) return;
+        if (art != null)
+        {
+            sprite.sprite = art;
+            sprite.color = Color.white; // real art renders un-tinted
+        }
+        else
+        {
+            sprite.color = tint;
+        }
     }
 
     /// <summary>Fires the reaction trigger and shows a phrase bubble (win prefers the recipe reactionText).</summary>

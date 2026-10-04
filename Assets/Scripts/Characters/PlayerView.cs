@@ -26,12 +26,27 @@ public class PlayerView : MonoBehaviour
     [Tooltip("Optional placeholder tint.")]
     [SerializeField] SpriteRenderer sprite;
 
+    [Tooltip("Optional real-art override. When set, replaces the placeholder square and bypasses the tint.")]
+    [SerializeField] Sprite art;
+
+    /// <summary>Runtime hook for the art override (set by GameLoopController from the level's art slot).</summary>
+    public Sprite Art { get => art; set => art = value; }
+
     [Tooltip("Blue-ish placeholder tint.")]
     [SerializeField] Color tint = new Color(0.45f, 0.65f, 0.95f);
 
     void Awake()
     {
-        if (sprite != null) sprite.color = tint;
+        if (sprite == null) return;
+        if (art != null)
+        {
+            sprite.sprite = art;
+            sprite.color = Color.white; // real art renders un-tinted
+        }
+        else
+        {
+            sprite.color = tint;
+        }
     }
 
     public void OnGrabCard() { Fire(GrabCard); }

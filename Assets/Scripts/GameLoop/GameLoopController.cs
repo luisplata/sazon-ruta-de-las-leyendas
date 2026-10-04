@@ -51,6 +51,12 @@ public class GameLoopController : MonoBehaviour
     [Tooltip("World-space enemy view (idle + reactions + phrase bubble). Null = no-op.")]
     [SerializeField] EnemyView enemyView;
 
+    [Tooltip("Scene backdrop layer (SpriteRenderer). Null = layer skipped (wired in slice 2).")]
+    [SerializeField] SpriteRenderer backdropRenderer;
+
+    [Tooltip("Scene midground layer (SpriteRenderer). Null = layer skipped (wired in slice 2).")]
+    [SerializeField] SpriteRenderer midgroundRenderer;
+
     /// <summary>
     /// How long win/game-over reactions stay visible before the round-end fade
     /// covers them (animations fire first, fade is delayed by this).
@@ -83,6 +89,7 @@ public class GameLoopController : MonoBehaviour
     /// </summary>
     public void StartGame()
     {
+        ApplyLevelArt();
         _roundActive = true;
         _lives = MaxLives();
         _patience = MaxPatience();
@@ -91,6 +98,39 @@ public class GameLoopController : MonoBehaviour
         {
             if (handController != null) handController.StartDeal();
         });
+    }
+
+    /// <summary>
+    /// Runtime art hook: pushes the current level's assignable art slots into
+    /// the enemy view and the scene backdrop/midground layers. Real art replaces
+    /// the placeholder; an empty slot keeps the tinted square with a per-level
+    /// fallback color. All refs null-guarded — the layer renderers are wired in
+    /// slice 2 and may be null right now.
+    /// </summary>
+    void ApplyLevelArt()
+    {
+        LevelConfig level = Enemy;
+        if (level == null) return;
+        if (enemyView != null) enemyView.Art = level.enemyArt;
+        ApplyLayer(backdropRenderer, level.background, FallbackTint(level));
+        ApplyLayer(midgroundRenderer, level.midground, FallbackTint(level));
+    }
+
+    /// <summary>Assigns art to a scene layer, or tints the placeholder square when the slot is empty.</summary>
+    void ApplyLayer(SpriteRenderer layer, Sprite art, Color fallback)
+    {
+        if (layer == null) return;
+        layer.sprite = art;
+        layer.color = art != null ? Color.white : fallback;
+    }
+
+    /// <summary>Per-level placeholder tint: Mexico terracotta, Colombia green, Llorona blue-gray (default Mexico).</summary>
+    Color FallbackTint(LevelConfig level)
+    {
+        if (level != null && level.regionName == "Colombia") return new Color(0.24f, 0.55f, 0.32f);
+        if (level != null && !string.IsNullOrEmpty(level.levelName) && level.levelName.Contains("Llorona"))
+            return new Color(0.42f, 0.48f, 0.56f);
+        return new Color(0.72f, 0.40f, 0.28f);
     }
 
     /// <summary>
