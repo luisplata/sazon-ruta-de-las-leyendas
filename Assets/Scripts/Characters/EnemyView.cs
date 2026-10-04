@@ -22,8 +22,16 @@ public class EnemyView : MonoBehaviour
     [Tooltip("Optional real-art override. When set, replaces the placeholder square and bypasses the tint.")]
     [SerializeField] Sprite art;
 
-    /// <summary>Runtime hook for the art override (set by GameLoopController from the level's art slot).</summary>
-    public Sprite Art { get => art; set => art = value; }
+    /// <summary>
+    /// Runtime hook for the art override (set by GameLoopController from the
+    /// level's art slot). Assigning re-renders immediately: real art replaces
+    /// the placeholder square and bypasses the tint; null keeps the tint.
+    /// </summary>
+    public Sprite Art
+    {
+        get => art;
+        set { art = value; ApplyArt(); }
+    }
 
     [Tooltip("Red-ish placeholder tint.")]
     [SerializeField] Color tint = new Color(0.95f, 0.5f, 0.45f);
@@ -44,6 +52,16 @@ public class EnemyView : MonoBehaviour
     [SerializeField] string[] eatenPhrases;
 
     void Awake()
+    {
+        ApplyArt();
+    }
+
+    /// <summary>
+    /// Renders the current art state: real art replaces the placeholder square
+    /// and renders un-tinted; an empty slot keeps the tinted placeholder.
+    /// Called from Awake and whenever Art is assigned at runtime.
+    /// </summary>
+    void ApplyArt()
     {
         if (sprite == null) return;
         if (art != null)
