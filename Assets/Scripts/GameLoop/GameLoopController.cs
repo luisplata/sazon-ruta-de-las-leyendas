@@ -112,17 +112,33 @@ public class GameLoopController : MonoBehaviour
         LevelConfig level = Enemy;
         if (level == null) return;
         if (enemyView != null) enemyView.Art = level.enemyArt;
-        ApplyLayer(backdropRenderer, level.background, FallbackTint(level));
-        ApplyLayer(midgroundRenderer, level.midground, FallbackTint(level));
+        Color tint = FallbackTint(level);
+        ApplyLayer(backdropRenderer, level.background, tint);
+        ApplyLayer(midgroundRenderer, level.midground, Darkened(tint));
     }
 
-    /// <summary>Assigns art to a scene layer, or tints the placeholder square when the slot is empty.</summary>
+    /// <summary>
+    /// Assigns art to a scene layer, or tints the placeholder square when the
+    /// slot is empty. Real art REPLACES the placeholder sprite and renders
+    /// un-tinted; an empty slot keeps the scene's placeholder sprite (WhiteSprite)
+    /// and only swaps the tint — never nulls the sprite.
+    /// </summary>
     void ApplyLayer(SpriteRenderer layer, Sprite art, Color fallback)
     {
         if (layer == null) return;
-        layer.sprite = art;
-        layer.color = art != null ? Color.white : fallback;
+        if (art != null)
+        {
+            layer.sprite = art;
+            layer.color = Color.white;
+        }
+        else
+        {
+            layer.color = fallback;
+        }
     }
+
+    /// <summary>Same hue, darker band — keeps the midground readable as a distinct layer above the backdrop.</summary>
+    Color Darkened(Color c) => new Color(c.r * 0.65f, c.g * 0.65f, c.b * 0.65f, 1f);
 
     /// <summary>Per-level placeholder tint: Mexico terracotta, Colombia green, Llorona blue-gray (default Mexico).</summary>
     Color FallbackTint(LevelConfig level)
