@@ -236,8 +236,8 @@ public class TutorialController : MonoBehaviour
             new StepConfig
             {
                 type = StepType.LogicalDish,
-                text = "¡NO cocines los tacos todavía! Cocina un plato AZUL (una receta de otra región) y verás cómo baja mi paciencia. Fácil: ELOTE ASADO = 1 sola carta de MAÍZ, o ESQUITES = Maíz + Cebolla. Evita la comida cruda.",
-                objective = "Cocina un plato AZUL (no el objetivo) en la cocina",
+                text = "¡No cocines los tacos todavía! Cocina ELOTE ASADO: pon 1 sola carta de MAÍZ en la cocina y pulsa PREPARAR. Verás cómo baja mi paciencia (plato AZUL).",
+                objective = "Cocina ELOTE ASADO: 1 carta de MAÍZ en la cocina, luego PREPARAR",
                 pulse = ZoneTarget.Center,
                 minHold = 0.4f
             },

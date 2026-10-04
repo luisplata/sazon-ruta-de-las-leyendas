@@ -2153,12 +2153,11 @@ MonoBehaviour:
     pulse: 2
     noRefillsHint: 1
     type: 3
-  - text: "\xA1NO cocines los tacos todav\xEDa! Cocina un plato AZUL (una receta
-      de otra regi\xF3n) y ver\xE1s c\xF3mo baja mi paciencia. F\xE1cil: ELOTE ASADO
-      = 1 sola carta de MA\xCDZ, o ESQUITES = Ma\xEDz + Cebolla. Evita la comida
-      cruda."
+  - text: "\xA1No cocines los tacos todav\xEDa! Cocina ELOTE ASADO: pon 1 sola carta
+      de MA\xCDZ en la cocina y pulsa PREPARAR. Ver\xE1s c\xF3mo baja mi paciencia
+      (plato AZUL)."
     minHold: 10
-    objective: Cocina un plato AZUL (no el objetivo) en la cocina
+    objective: "Cocina ELOTE ASADO: 1 carta de MA\xCDZ en la cocina, luego PREPARAR"
     pulse: 1
     noRefillsHint: 0
     type: 4
