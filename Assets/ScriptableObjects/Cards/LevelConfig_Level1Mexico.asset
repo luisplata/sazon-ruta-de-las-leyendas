@@ -23,9 +23,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 065aa033beaff124bb4e696f874ed56a, type: 2}
   - {fileID: 11400000, guid: 2811a3305d09014489c295006d34f3e2, type: 2}
   legendTitle: El Ahuizotl
-  legendText: "El Ahuizotl es una criatura de la mitolog\xEDa mexica que habita r\xEDos
-    y lagunas. De aspecto de peque\xF1o perro, remata su cola con una mano que usa
-    para atrapar a quien se acerca a la orilla. Las leyendas cuentan que arrastra
-    a sus v\xEDctimas al fondo del agua para devorarlas."
+  legendText: "El Ahuizotl, peque\xF1o perro del agua con una mano en la cola, arrastra
+    a sus v\xEDctimas al fondo del r\xEDo. Pero esta noche no quiere carne: tiene
+    antojo de COCINA MEXICANA.\n\nLo que quiere comer:\n- Tacos de Chapulines: Ma\xEDz
+    + Insectos + Chile Piqu\xEDn\n- Elote Asado: Ma\xEDz\n- Elote con Chile: Ma\xEDz
+    + Chile Piqu\xEDn\n- Elote Picante: Ma\xEDz + Tomate + Chile Piqu\xEDn\n- Esquites
+    Cl\xE1sicos: Ma\xEDz + Cebolla + Lim\xF3n\n- Esquites Sencillos: Ma\xEDz + Cebolla\n\nPara
+    prepararlos: arrastra 3 cartas a la olla (zona azul) y pulsa PREPARAR. Un buen
+    plato calma al monstruo."
   audioNarration: {fileID: 0}
   marketConfig: {fileID: 11400000, guid: fc3db025d8178a94ab9c35b0d98f9e40, type: 2}
+  background: {fileID: 0}
+  midground: {fileID: 0}
+  enemyArt: {fileID: 0}

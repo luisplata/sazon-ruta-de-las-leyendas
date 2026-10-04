@@ -19,6 +19,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2811a3305d09014489c295006d34f3e2, type: 2}
   legendTitle: La Llorona
   legendText: "Una mujer vestida de blanco llora junto al r\xEDo. Dicen que busca
-    a sus hijos... y que cocina para calmar su pena."
+    a sus hijos... y que cocina para calmar su pena. Esta noche tiene antojo de un
+    solo plato:\n\n- Tacos de Chapulines: Ma\xEDz + Insectos + Chile Piqu\xEDn\n\nEl
+    tutorial te ense\xF1a a prepararlo paso a paso."
   audioNarration: {fileID: 0}
   marketConfig: {fileID: 11400000, guid: bb2d8130988947009b46cda685da0cec, type: 2}
+  background: {fileID: 0}
+  midground: {fileID: 0}
+  enemyArt: {fileID: 0}
