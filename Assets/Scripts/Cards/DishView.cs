@@ -24,6 +24,9 @@ public class DishView : MonoBehaviour
     /// <summary>Optional dish-art sprite slot; sits ABOVE the kind-tinted bg, below the name.</summary>
     [SerializeField] Image artImage;
 
+    /// <summary>Card-frame Image (same visual role as CardView.border): tinted by the dish kind color.</summary>
+    [SerializeField] Image border;
+
     /// <summary>
     /// Applies the resolved dish's identity and kind color. When art is
     /// present (and the artImage slot is wired) the sprite shows instead of
@@ -32,6 +35,7 @@ public class DishView : MonoBehaviour
     public void SetDish(string dishName, string icon, Color color, Sprite art = null)
     {
         if (image != null) image.color = color;
+        if (border != null) border.color = color;
         if (nameText != null) nameText.text = dishName;
 
         if (artImage != null)
