@@ -33,6 +33,17 @@ public class EnemyView : MonoBehaviour
         set { art = value; ApplyArt(); }
     }
 
+    /// <summary>
+    /// Runtime hook for the enemy visual (set by GameLoopController when the
+    /// level's enemy prefab is spawned). Mirrors the <see cref="Art"/> pattern:
+    /// null keeps the placeholder's authored animator.
+    /// </summary>
+    public Animator Animator
+    {
+        get => animator;
+        set => animator = value;
+    }
+
     [Tooltip("Red-ish placeholder tint.")]
     [SerializeField] Color tint = new Color(0.95f, 0.5f, 0.45f);
 
@@ -78,8 +89,35 @@ public class EnemyView : MonoBehaviour
     /// <summary>Fires the reaction trigger and shows a phrase bubble (win prefers the recipe reactionText).</summary>
     public void PlayReaction(EnemyReaction reaction, string preferredPhrase = null)
     {
-        if (animator != null) animator.SetTrigger(reaction.ToString());
+        TriggerReaction(reaction);
         ShowBubble(Pick(reaction, preferredPhrase));
+    }
+
+    /// <summary>
+    /// Plays a reaction trigger ONLY when the current animator actually exposes
+    /// a parameter of that name. SetTrigger on a missing parameter logs a
+    /// warning on every call, so the pure <see cref="AnimParams.HasParam"/> guard
+    /// keeps the console clean for controllers without reaction triggers (e.g.
+    /// Creature1 1.controller, which has zero parameters). A missing trigger is
+    /// a no-op — the animator state is left unchanged; the phrase bubble is
+    /// unaffected.
+    /// </summary>
+    void TriggerReaction(EnemyReaction reaction)
+    {
+        if (animator == null) return;
+        string trigger = reaction.ToString();
+        if (!AnimParams.HasParam(animator.parameters, trigger)) return;
+        animator.SetTrigger(trigger);
+    }
+
+    /// <summary>
+    /// Hides the tinted placeholder square when a real prefab enemy is spawned
+    /// (the prefab's parts sort above the square, which would otherwise peek
+    /// through). Safe to call when the sprite is unwired.
+    /// </summary>
+    public void HidePlaceholder()
+    {
+        if (sprite != null) sprite.enabled = false;
     }
 
     /// <summary>Bubble only, no animation trigger.</summary>
@@ -98,10 +136,15 @@ public class EnemyView : MonoBehaviour
         ShowBubble(phrase);
     }
 
-    /// <summary>Hard-returns to Idle, guarding interrupted one-shots (called behind the round-end fade).</summary>
+    /// <summary>
+    /// Hard-returns to Idle, guarding interrupted one-shots (called behind the
+    /// round-end fade). Only plays when the animator actually has an "Idle"
+    /// state, so a controller without one does not log a missing-state warning.
+    /// </summary>
     public void ResetToIdle()
     {
-        if (animator != null) animator.Play("Idle", 0, 0f);
+        if (animator != null && animator.HasState(0, Animator.StringToHash("Idle")))
+            animator.Play("Idle", 0, 0f);
     }
 
     string Pick(EnemyReaction r, string pref)

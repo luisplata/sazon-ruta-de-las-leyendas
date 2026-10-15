@@ -57,6 +57,9 @@ public class GameLoopController : MonoBehaviour
     [Tooltip("Scene midground layer (SpriteRenderer). Null = layer skipped (wired in slice 2).")]
     [SerializeField] SpriteRenderer midgroundRenderer;
 
+    [Tooltip("Optional foreground layer in front of the characters. Null = skipped (no art yet).")]
+    [SerializeField] SpriteRenderer foregroundRenderer;
+
     /// <summary>
     /// How long win/game-over reactions stay visible before the round-end fade
     /// covers them (animations fire first, fade is delayed by this).
@@ -66,6 +69,9 @@ public class GameLoopController : MonoBehaviour
     int _lives;
     int _patience;
     bool _roundActive;
+
+    /// <summary>The spawned enemy prefab instance (one per level start), or null when the level keeps the placeholder.</summary>
+    GameObject _enemyInstance;
 
     /// <summary>Guards against loading the next scene twice (defense-in-depth: the fade overlay already blocks input).</summary>
     bool _loadingScene;
@@ -112,9 +118,54 @@ public class GameLoopController : MonoBehaviour
         LevelConfig level = Enemy;
         if (level == null) return;
         if (enemyView != null) enemyView.Art = level.enemyArt;
+        SpawnEnemy(level);
         Color tint = FallbackTint(level);
         ApplyLayer(backdropRenderer, level.background, tint);
         ApplyLayer(midgroundRenderer, level.midground, Darkened(tint));
+        ApplyForeground(level);
+    }
+
+    /// <summary>
+    /// Instantiates the level's configured <see cref="LevelConfig.enemyPrefab"/>
+    /// under the scene enemy anchor (<c>enemyView.transform</c>) and plugs its
+    /// Animator into the unchanged <see cref="EnemyView"/>. Any previous instance
+    /// is destroyed first (exactly one exists under the anchor). The 3-arg
+    /// Instantiate overload with <c>instantiateInWorldSpace: true</c> preserves
+    /// the prefab's authored world scale; the local position is then snapped to
+    /// zero so the enemy lands on the anchor spot. An unassigned prefab keeps
+    /// today's placeholder behavior.
+    /// </summary>
+    void SpawnEnemy(LevelConfig level)
+    {
+        if (level == null || level.enemyPrefab == null || enemyView == null) return;
+
+        if (_enemyInstance != null) Destroy(_enemyInstance);
+        _enemyInstance = Instantiate(level.enemyPrefab, enemyView.transform, true);
+        _enemyInstance.transform.localPosition = Vector3.zero;
+
+        Animator spawnedAnimator = _enemyInstance.GetComponentInChildren<Animator>();
+        if (spawnedAnimator != null) enemyView.Animator = spawnedAnimator;
+        enemyView.HidePlaceholder();
+    }
+
+    /// <summary>
+    /// Assigns the optional foreground/front art to the foreground layer.
+    /// Both the scene renderer and the level slot are null today (the art does
+    /// not exist yet), so this is an eager no-op — the front stays disabled.
+    /// Enabling it later is data-only: wire the scene renderer + assign the art.
+    /// </summary>
+    void ApplyForeground(LevelConfig level)
+    {
+        if (foregroundRenderer == null) return;
+        Sprite art = level != null ? level.foreground : null;
+        if (art == null)
+        {
+            foregroundRenderer.enabled = false; // art missing → keep the front disabled
+            return;
+        }
+        foregroundRenderer.sprite = art;
+        foregroundRenderer.color = Color.white;
+        foregroundRenderer.enabled = true;
     }
 
     /// <summary>

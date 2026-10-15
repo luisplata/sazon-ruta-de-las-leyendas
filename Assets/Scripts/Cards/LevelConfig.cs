@@ -43,4 +43,10 @@ public class LevelConfig : ScriptableObject
 
     [Tooltip("Enemy character art. Null = tinted placeholder square.")]
     public Sprite enemyArt;
+
+    [Tooltip("Animated enemy prefab instantiated under the scene Enemy anchor at game start. Null = keep the placeholder (enemyArt).")]
+    public GameObject enemyPrefab;
+
+    [Tooltip("Optional foreground/front layer art, in front of the characters. Null = front stays disabled (no art yet).")]
+    public Sprite foreground;
 }
