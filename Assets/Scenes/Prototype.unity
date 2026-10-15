@@ -1867,9 +1867,9 @@ Transform:
   m_GameObject: {fileID: 1349994337}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.64, y: 0.45, z: 0}
-  m_LocalScale: {x: 4.7, y: 4.7, z: 4.7}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: -3.96, y: -1.53, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1688562718}
   m_Father: {fileID: 0}
@@ -2108,6 +2108,8 @@ MonoBehaviour:
   patienceText: {fileID: 810844229}
   coinsText: {fileID: 129699251}
   playerView: {fileID: 1349994338}
+  playerPrefab: {fileID: 5689518329549078047, guid: 166c869ceebd7b8479bf60ba085b6b6b, type: 3}
+  playerScale: 0.5
   enemyView: {fileID: 1409132180}
   backdropRenderer: {fileID: 1830665373}
   midgroundRenderer: {fileID: 606170096}
@@ -2612,7 +2614,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -100
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 6388140688911292641, guid: b8d3af21e3cfb984c8d20407684086ba, type: 3}
+  m_Sprite: {fileID: -6695950386315148514, guid: e19d0ec9042957d48b97fc4ce6b927c8, type: 3}
   m_Color: {r: 0.62, g: 0.55, b: 0.5, a: 1}
   m_FlipX: 0
   m_FlipY: 0

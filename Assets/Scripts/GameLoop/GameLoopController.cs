@@ -27,38 +27,45 @@ using TMPro;
 /// </summary>
 public class GameLoopController : MonoBehaviour
 {
-    [Tooltip("Static tuning: maxLives / maxPatience / fadeDuration.")]
-    [SerializeField] GameLoopConfig config;
+    [Tooltip("Static tuning: maxLives / maxPatience / fadeDuration.")] [SerializeField]
+    GameLoopConfig config;
 
-    [Tooltip("Owns the cook/trash/deal mechanics; PrepareFood returns the resolution.")]
-    [SerializeField] HandController handController;
+    [Tooltip("Owns the cook/trash/deal mechanics; PrepareFood returns the resolution.")] [SerializeField]
+    HandController handController;
 
-    [Tooltip("Full-screen black overlay for the intro reveal and round-end cover.")]
-    [SerializeField] FadeController fadeController;
+    [Tooltip("Full-screen black overlay for the intro reveal and round-end cover.")] [SerializeField]
+    FadeController fadeController;
 
-    [Tooltip("HUD label showing lives (e.g. 'VIDAS: 3').")]
-    [SerializeField] TMP_Text livesText;
+    [Tooltip("HUD label showing lives (e.g. 'VIDAS: 3').")] [SerializeField]
+    TMP_Text livesText;
 
-    [Tooltip("HUD label showing enemy patience (e.g. 'PACIENCIA: 3').")]
-    [SerializeField] TMP_Text patienceText;
+    [Tooltip("HUD label showing enemy patience (e.g. 'PACIENCIA: 3').")] [SerializeField]
+    TMP_Text patienceText;
 
-    [Tooltip("HUD label showing the run's coins (e.g. 'MONEDAS: 15'). Null = no-op.")]
-    [SerializeField] TMP_Text coinsText;
+    [Tooltip("HUD label showing the run's coins (e.g. 'MONEDAS: 15'). Null = no-op.")] [SerializeField]
+    TMP_Text coinsText;
 
-    [Tooltip("World-space player view (idle + one-shot anims). Null = no-op.")]
-    [SerializeField] PlayerView playerView;
+    [Tooltip("World-space player view (idle + one-shot anims). Null = no-op.")] [SerializeField]
+    PlayerView playerView;
 
-    [Tooltip("World-space enemy view (idle + reactions + phrase bubble). Null = no-op.")]
-    [SerializeField] EnemyView enemyView;
+    [Tooltip(
+        "Universal protagonist prefab instantiated at the scene Player anchor on start. Null = keep the placeholder square.")]
+    [SerializeField]
+    GameObject playerPrefab;
 
-    [Tooltip("Scene backdrop layer (SpriteRenderer). Null = layer skipped (wired in slice 2).")]
-    [SerializeField] SpriteRenderer backdropRenderer;
+    [SerializeField] float playerScale = 0.5f;
 
-    [Tooltip("Scene midground layer (SpriteRenderer). Null = layer skipped (wired in slice 2).")]
-    [SerializeField] SpriteRenderer midgroundRenderer;
+    [Tooltip("World-space enemy view (idle + reactions + phrase bubble). Null = no-op.")] [SerializeField]
+    EnemyView enemyView;
 
-    [Tooltip("Optional foreground layer in front of the characters. Null = skipped (no art yet).")]
-    [SerializeField] SpriteRenderer foregroundRenderer;
+    [Tooltip("Scene backdrop layer (SpriteRenderer). Null = layer skipped (wired in slice 2).")] [SerializeField]
+    SpriteRenderer backdropRenderer;
+
+    [Tooltip("Scene midground layer (SpriteRenderer). Null = layer skipped (wired in slice 2).")] [SerializeField]
+    SpriteRenderer midgroundRenderer;
+
+    [Tooltip("Optional foreground layer in front of the characters. Null = skipped (no art yet).")] [SerializeField]
+    SpriteRenderer foregroundRenderer;
 
     /// <summary>
     /// How long win/game-over reactions stay visible before the round-end fade
@@ -72,6 +79,9 @@ public class GameLoopController : MonoBehaviour
 
     /// <summary>The spawned enemy prefab instance (one per level start), or null when the level keeps the placeholder.</summary>
     GameObject _enemyInstance;
+
+    /// <summary>The spawned protagonist prefab instance (one per game start), or null when no prefab is assigned.</summary>
+    GameObject _playerInstance;
 
     /// <summary>Guards against loading the next scene twice (defense-in-depth: the fade overlay already blocks input).</summary>
     bool _loadingScene;
@@ -96,6 +106,7 @@ public class GameLoopController : MonoBehaviour
     public void StartGame()
     {
         ApplyLevelArt();
+        SpawnPlayer();
         _roundActive = true;
         _lives = MaxLives();
         _patience = MaxPatience();
@@ -149,6 +160,31 @@ public class GameLoopController : MonoBehaviour
     }
 
     /// <summary>
+    /// Instantiates the universal <see cref="playerPrefab"/> under the scene
+    /// player anchor (<c>playerView.transform</c>) and plugs its Animator into
+    /// the unchanged <see cref="PlayerView"/>, hiding the placeholder square.
+    /// Any previous instance is destroyed first (exactly one exists under the
+    /// anchor). The 3-arg Instantiate overload with <c>instantiateInWorldSpace:
+    /// true</c> preserves the prefab's authored world scale; the local position
+    /// is then snapped to zero so Abue lands on the anchor spot. An unassigned
+    /// prefab keeps today's placeholder behavior (no exception). Level-independent,
+    /// so it runs once from <see cref="StartGame"/>.
+    /// </summary>
+    void SpawnPlayer()
+    {
+        if (playerPrefab == null || playerView == null) return;
+
+        if (_playerInstance != null) Destroy(_playerInstance);
+        _playerInstance = Instantiate(playerPrefab, playerView.transform, true);
+        _playerInstance.transform.localPosition = Vector3.zero;
+        _playerInstance.transform.localScale = new Vector3(playerScale, playerScale, playerScale);
+
+        Animator spawnedAnimator = _playerInstance.GetComponentInChildren<Animator>();
+        if (spawnedAnimator != null) playerView.Animator = spawnedAnimator;
+        playerView.HidePlaceholder();
+    }
+
+    /// <summary>
     /// Assigns the optional foreground/front art to the foreground layer.
     /// Both the scene renderer and the level slot are null today (the art does
     /// not exist yet), so this is an eager no-op — the front stays disabled.
@@ -163,6 +199,7 @@ public class GameLoopController : MonoBehaviour
             foregroundRenderer.enabled = false; // art missing → keep the front disabled
             return;
         }
+
         foregroundRenderer.sprite = art;
         foregroundRenderer.color = Color.white;
         foregroundRenderer.enabled = true;
@@ -321,6 +358,7 @@ public class GameLoopController : MonoBehaviour
                 ? config.nextSceneOnLose
                 : Scenes.Prototype;
         }
+
         SceneManager.LoadScene(sceneName);
     }
 
