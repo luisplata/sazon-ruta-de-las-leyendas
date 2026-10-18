@@ -45,11 +45,11 @@ public class CardVisualConfig : ScriptableObject
     public int maxCook = 3;
 
     [Tooltip(
-        "Corner trash zone capacity (max parked cards at once). The per-game scarce resource is REFILLS (maxRefillsPerGame), not ingredients — parking is gated only by this capacity.")]
+        "Corner trash zone capacity (max parked cards at once). Parking is gated only by this capacity — never by refills, because REFILL always flushes the corner for free.")]
     public int maxTrashPerGame = 2;
 
     [Tooltip(
-        "Maximum number of times the trash zone can be DUMPED (REFILL button uses) per game. Parking is unlimited (capacity-gated only); the refill action itself is the limited valve. Empty-trash REFILL does not consume one.")]
+        "Maximum number of hand-cycle REFILL uses per game. Each REFILL that discards at least one hand card consumes one use; an empty-hand REFILL is free. Never renamed: the name is serialized in the .asset.")]
     public int maxRefillsPerGame = 2;
 
     [Tooltip("Scale of parked cards inside zones (both cook and trash).")]
@@ -85,6 +85,11 @@ public class CardVisualConfig : ScriptableObject
     public AnimationCurve cornerRotationSpeedCurve = RotationSpeedCurve();
 
     [Tooltip("Scale over time, 1 -> 0.")] public AnimationCurve cornerDiscardScaleCurve = ScaleDown01();
+
+    [Header("Hand discard (REFILL)")]
+    [Tooltip(
+        "Canvas-space target the whole hand flies to on REFILL (the trash corner). Each card shrinks to 0 there and is destroyed.")]
+    public Vector2 discardTargetPosition = new Vector2(-717f, -310f);
 
     [Header("Colors")] public Color cardColor = new Color(0.95f, 0.95f, 0.95f, 1f);
     public Color cardTextColor = new Color(0.1f, 0.1f, 0.1f, 1f);

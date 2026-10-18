@@ -158,6 +158,23 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         else StartCoroutine(DiscardCorner());
     }
 
+    /// <summary>
+    /// REFILL discard: eases this hand card LEFT to the configured discard
+    /// target while shrinking it to 0, then destroys it. Hand cards were never
+    /// parked in a zone, so — unlike <see cref="ConsumeFromZone"/> — no zone
+    /// release happens. A card already leaving (consume or another fly) is
+    /// ignored, and any in-flight move is stopped so it cannot fight the fly.
+    /// </summary>
+    public void FlyLeftTo(Vector2 targetAnchoredPos)
+    {
+        if (_discarding) return;
+        _discarding = true;
+        _dragging = false; // a mid-drag card is leaving; ignore the rest of the drag
+        StopMove();
+        group.blocksRaycasts = false;
+        StartCoroutine(FlyLeftRoutine(targetAnchoredPos, _config.cornerDiscardDuration));
+    }
+
     public void OnBeginDrag(PointerEventData e)
     {
         if (_discarding || _parked) return;
@@ -287,6 +304,32 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         rect.localScale = Vector3.zero;
 
         _zone.Release(this);
+        Destroy(gameObject);
+    }
+
+    /// <summary>
+    /// Hand-discard (REFILL) fly: eases anchoredPosition from the current slot
+    /// to the discard target (reLayoutEasingCurve) while scaling from the
+    /// current scale to 0 (cornerDiscardScaleCurve), then destroys the card.
+    /// The start scale is read live so a mid-drag card shrinks from its lifted
+    /// scale without a pop. Never touches a zone — hand cards are not parked.
+    /// </summary>
+    IEnumerator FlyLeftRoutine(Vector2 target, float duration)
+    {
+        Vector2 startPos = rect.anchoredPosition;
+        float startScale = rect.localScale.x;
+
+        for (float t = 0f; t < 1f; t += Time.deltaTime / Mathf.Max(duration, 0.0001f))
+        {
+            float p = Mathf.Clamp01(t);
+            rect.anchoredPosition = Vector2.Lerp(startPos, target, _config.reLayoutEasingCurve.Evaluate(p));
+            rect.localScale = Vector3.one * (startScale * _config.cornerDiscardScaleCurve.Evaluate(p));
+            yield return null;
+        }
+
+        rect.anchoredPosition = target;
+        rect.localScale = Vector3.zero;
+
         Destroy(gameObject);
     }
 

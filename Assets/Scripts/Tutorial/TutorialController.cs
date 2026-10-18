@@ -76,9 +76,11 @@ public class TutorialController : MonoBehaviour
 
     // Fix WARNING 2 (trash-step softlock): trash park + REFILL dump are observed
     // at ANY step, not frame-locked to step 4. The corner drain edge (>=1 -> 0)
-    // only ever happens via Refill() consuming the trash zone, so it is a
-    // reliable "a refill was used" signal. maxRefillsPerGame is 2 in the shared
-    // CardVisualConfig (tutorial scene uses it), mirrored here for the hint.
+    // only ever happens via Refill()'s corner flush (free and unconditional
+    // since the hand-cycle rework), so it stays a reliable "a refill was used"
+    // signal even when the budget is spent. maxRefillsPerGame is 2 in the
+    // shared CardVisualConfig (tutorial scene uses it), mirrored here for the
+    // hint.
     const int MaxTutorialRefills = 2;
     const string NoRefillsHint = "Sin refills, usa la cocina";
     bool _sawTrash;
@@ -227,8 +229,8 @@ public class TutorialController : MonoBehaviour
             new StepConfig
             {
                 type = StepType.TrashRefill,
-                text = "La ZONA ROJA es la BASURA. Tira una carta que no uses y pulsa REFILL para descartarla y llenar tu mano. ¡Los refills son limitados!",
-                objective = "Tira una carta a la ZONA ROJA (basura) y pulsa REFILL",
+                text = "La ZONA ROJA es la BASURA. Pulsa REFILL y TODA tu mano volará a la basura; enseguida robas 5 cartas nuevas. ¡Solo tienes 2 refills!",
+                objective = "Tira una carta a la ZONA ROJA (basura) y pulsa REFILL para reciclar tu mano",
                 pulse = ZoneTarget.Corner,
                 minHold = 0.4f,
                 noRefillsHint = true
@@ -259,9 +261,9 @@ public class TutorialController : MonoBehaviour
 
     /// <summary>
     /// Every-frame zone observer (fix WARNING 2): tracks trash parks and REFILL
-    /// dumps globally so step 4 is not frame-locked to a park landing exactly
-    /// while it is active. A corner drain (count >= 1 -> 0) only ever happens
-    /// via Refill() consuming the trash zone (PrepareFood ignores the corner,
+    /// corner flushes globally so step 4 is not frame-locked to a park landing
+    /// exactly while it is active. A corner drain (count >= 1 -> 0) only ever
+    /// happens via Refill()'s free corner flush (PrepareFood ignores the corner,
     /// StartDeal only clears at game start), so it is a reliable "refill used"
     /// signal.
     /// </summary>
@@ -317,9 +319,9 @@ public class TutorialController : MonoBehaviour
     }
 
     /// <summary>
-    /// Step 4: a trash park was seen AND a REFILL dump was seen, at ANY step.
-    /// Burning refills before step 4 still means the dumps happened, so the step
-    /// can never softlock — every spent refill requires a trash park + dump.
+    /// Step 4: a trash park was seen AND a REFILL corner flush was seen, at ANY
+    /// step. The flush is free and unconditional (hand-cycle REFILL), so step 4
+    /// can never softlock: a parked trash card is always drainable.
     /// </summary>
     bool TrashThenRefill() => _sawTrash && _sawRefillDump;
 

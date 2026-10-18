@@ -198,6 +198,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  discardTargetPosition: {x: -717, y: -310}
   cardColor: {r: 0.95, g: 0.95, b: 0.95, a: 1}
   cardTextColor: {r: 0.1, g: 0.1, b: 0.1, a: 1}
   centerZoneColor: {r: 0.3, g: 0.7, b: 1, a: 0.25}

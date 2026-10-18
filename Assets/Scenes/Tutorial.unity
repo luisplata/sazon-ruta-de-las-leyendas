@@ -2146,10 +2146,10 @@ MonoBehaviour:
     pulse: 1
     noRefillsHint: 0
     type: 2
-  - text: "La ZONA ROJA es la BASURA. Tira una carta que no uses y pulsa REFILL para
-      descartarla y llenar tu mano. \xA1Los refills son limitados!"
+  - text: "La ZONA ROJA es la BASURA. Pulsa REFILL y TODA tu mano volar\xE1 a la
+      basura; enseguida robas 5 cartas nuevas. \xA1Solo tienes 2 refills!"
     minHold: 10
-    objective: Tira una carta a la ZONA ROJA (basura) y pulsa REFILL
+    objective: Tira una carta a la ZONA ROJA (basura) y pulsa REFILL para reciclar tu mano
     pulse: 2
     noRefillsHint: 1
     type: 3

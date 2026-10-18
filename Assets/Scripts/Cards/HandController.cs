@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,9 +6,11 @@ using UnityEngine;
 /// Sole owner of the hand state. Spawns cards from the deal origin onto a
 /// parabola (quadratic Bezier), re-layouts the remaining cards whenever one
 /// is parked (removed from the hand synchronously at drop-accept), and owns
-/// the game flow: PrepareFood consumes the cook queue, Refill dumps the trash
-/// queue (limited to maxRefillsPerGame per game) and tops up, StartDeal resets
-/// zones + refill counter. The trash REFILL is the scarce valve, not ingredients.
+/// the game flow: PrepareFood consumes the cook queue, Refill discards the
+/// WHOLE hand (cards fly left to the discard target, then a full hand is
+/// re-dealt from the draw cursor) and also flushes any parked trash for free,
+/// StartDeal resets zones + refill counter. The hand-cycle REFILL is the
+/// scarce valve, not ingredients.
 /// </summary>
 public class HandController : MonoBehaviour
 {
@@ -53,13 +56,19 @@ public class HandController : MonoBehaviour
     int _dealIndex;
 
     /// <summary>
-    /// Trash-dump (REFILL) uses THIS GAME. Incremented ONLY when Refill()
-    /// actually dumps trash; empty-trash refills do NOT consume one. Reset to 0
-    /// in StartDeal. Gates Refill() itself AND corner park acceptance: once
-    /// exhausted (2/2), the trash zone rejects new parks so no card can get
-    /// stuck there (Option A).
+    /// Hand-cycle (REFILL) uses THIS GAME. Incremented ONLY when Refill()
+    /// actually discards at least one hand card; an empty-hand refill does NOT
+    /// consume one. Reset to 0 in StartDeal. Gates Refill() itself; the corner
+    /// park is NOT gated (the corner flush is free, so a parked card can never
+    /// get stranded).
     /// </summary>
     int _refillsUsed;
+
+    /// <summary>True while a RefillRoutine is running; further presses are ignored.</summary>
+    bool _refilling;
+
+    /// <summary>Live refill coroutine, stopped by StartDeal so a restart never deals a partial hand.</summary>
+    Coroutine _refillRoutine;
 
     /// <summary>Number of cards currently in the hand (parked cards excluded).</summary>
     public int Count => _cards.Count;
@@ -89,12 +98,22 @@ public class HandController : MonoBehaviour
     public RecipeKind? LastResolutionKind { get; private set; }
 
     /// <summary>
-    /// START: clears both zone queues and the refill counter, destroys all
-    /// existing hand cards, then deals a full hand (each card appears at the
-    /// deal origin and animates to its parabola slot).
+    /// START: clears both zone queues and the refill counter, aborts any
+    /// in-flight refill, destroys all existing hand cards, then deals a full
+    /// hand (each card appears at the deal origin and animates to its parabola
+    /// slot).
     /// </summary>
     public void StartDeal()
     {
+        // A mid-refill restart must not deal a partial hand later: kill the
+        // routine and drop the guard BEFORE the reset below.
+        if (_refillRoutine != null)
+        {
+            StopCoroutine(_refillRoutine);
+            _refillRoutine = null;
+        }
+        _refilling = false;
+
         // Shuffle happens HERE and only here: expand the parametrized deck, mix
         // in the run's Market purchases, and Fisher-Yates it into the draw
         // order. Seeded (deck.RandomSeed >= 0) for reproducible debugging,
@@ -125,24 +144,63 @@ public class HandController : MonoBehaviour
     }
 
     /// <summary>
-    /// REFILL: the limited valve — at most maxRefillsPerGame dump-uses per game.
-    /// Once exhausted, this is a hard no-op (no dump, no top-up). Otherwise:
-    /// if there is trash parked, dump it (consume animation) and count the use;
-    /// an empty-trash REFILL tops the hand up for free (does NOT consume a
-    /// refill — only actual dumps count). Then top the hand up to maxHandSize.
+    /// REFILL: the limited valve — at most maxRefillsPerGame hand-cycle uses
+    /// per game. Ignores presses while a refill is already running (so a
+    /// double-click can never deal two hands). See <see cref="RefillRoutine"/>
+    /// for the sequence.
     /// </summary>
     public void Refill()
     {
-        if (_refillsUsed >= config.maxRefillsPerGame) return;
+        if (_refilling) return;
+        _refilling = true;
+        _refillRoutine = StartCoroutine(RefillRoutine());
+    }
 
+    /// <summary>
+    /// The REFILL sequence: (1) flush any parked corner/trash cards — free and
+    /// unconditional, so it never charges a use and never blocks; (2) if the
+    /// hand is non-empty and budget remains, charge a use, clear the hand
+    /// BEFORE flying its cards LEFT to the discard target, wait out the fly,
+    /// then re-deal maxHandSize cards from the existing draw cursor (no
+    /// re-shuffle); an empty hand just tops up for free. Pot/center cards are
+    /// never touched. Clears the re-entrancy guard last.
+    /// </summary>
+    IEnumerator RefillRoutine()
+    {
         if (cornerZone.Count > 0)
         {
             playerView?.OnDiscard();
             ConsumeZone(cornerZone);
+        }
+
+        if (_cards.Count > 0 && _refillsUsed < config.maxRefillsPerGame)
+        {
             _refillsUsed++;
             UpdateRefillLabel();
+            playerView?.OnDiscard();
+
+            // Clear the hand BEFORE the fly: Count/re-layout must never see the
+            // departing cards, and the new hand must not mix with them.
+            var discarding = new List<CardView>(_cards);
+            _cards.Clear();
+            foreach (var card in discarding)
+                if (card != null) card.FlyLeftTo(config.discardTargetPosition);
+
+            // Wait out the fly, plus one frame for the fly loop's exit, before
+            // dealing — so no re-layout fights the departing cards.
+            yield return new WaitForSeconds(config.cornerDiscardDuration);
+            yield return null;
+
+            for (int i = 0; i < config.maxHandSize; i++)
+                DealOne(i);
         }
-        TopUpHand();
+        else if (_cards.Count == 0)
+        {
+            TopUpHand();
+        }
+
+        _refilling = false;
+        _refillRoutine = null;
     }
 
     /// <summary>
@@ -154,7 +212,7 @@ public class HandController : MonoBehaviour
     /// global catalog (cross-level exact matches surface as Presented/blue),
     /// spawns the dish result card right of center, then consumes the cook
     /// queue and tops the hand up. The trash queue is NOT touched — it is only
-    /// dumped by REFILL. The returned result lets the game loop apply the
+    /// flushed by REFILL. The returned result lets the game loop apply the
     /// life/patience mapping.
     /// </summary>
     public ResolutionResult? PrepareFood()
@@ -253,30 +311,26 @@ public class HandController : MonoBehaviour
     }
 
     /// <summary>
-    /// Refreshes the on-screen refill counter (e.g. "REFILLS: 1/2"). No-op
-    /// when the label reference is unwired.
+    /// Refreshes the on-screen refill counter (e.g. "REFILLS (MANO): 1/2"),
+    /// refreshed on every consume so the HUD is honest while the whole hand is
+    /// flying. No-op when the label reference is unwired.
     /// </summary>
     void UpdateRefillLabel()
     {
         if (refillLabel == null) return;
-        refillLabel.text = $"REFILLS: {_refillsUsed}/{config.maxRefillsPerGame}";
+        refillLabel.text = $"REFILLS (MANO): {_refillsUsed}/{config.maxRefillsPerGame}";
     }
 
     /// <summary>
     /// Tries to park <paramref name="card"/> in <paramref name="zone"/>.
-    /// Rejected (false, hand unchanged) when the zone is at capacity, or — for
-    /// the corner/trash zone — when refills are exhausted (2/2): the trash
-    /// closes and the card returns to the hand, so nothing can get stuck there.
-    /// On accept: removes the card from the hand SYNCHRONOUSLY, re-layouts the
-    /// hand NOW, and starts the park animation.
+    /// Rejected (false, hand unchanged) when the zone is locked or at capacity.
+    /// The corner is NEVER rejected for budget reasons: REFILL always flushes it
+    /// for free, so a parked card can never be stranded. On accept: removes the
+    /// card from the hand SYNCHRONOUSLY, re-layouts the hand NOW, and starts the
+    /// park animation.
     /// </summary>
     public bool TryParkInZone(CardView card, DropZone zone)
     {
-        // Corner/trash closes when refills are exhausted: capacity still
-        // applies while refills remain, but at 2/2 no new trash is accepted
-        // (nothing could ever dump it — Refill is a hard no-op, PrepareFood
-        // ignores the trash zone). Rejected parks return to the hand.
-        if (zone == cornerZone && _refillsUsed >= config.maxRefillsPerGame) return false;
         if (!zone.Accept(card)) return false;
 
         // Player reacts to the park destination (design D1 mapping).
