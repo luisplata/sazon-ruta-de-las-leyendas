@@ -789,7 +789,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &619394801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -916,15 +916,15 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -2178914305119257263, guid: ceaf2db3554f0aa4da7f367a985c62be, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
-  m_UseSpriteMesh: 0
+  m_UseSpriteMesh: 1
   m_PixelsPerUnitMultiplier: 1
 --- !u!222 &687604050
 CanvasRenderer:
@@ -1094,6 +1094,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 712268013}
   m_CullTransparentMesh: 1
+--- !u!1001 &757798897
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 112220007993996133, guid: 9370e1c6418667d4288a69b9db1e373d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.1108509
+      objectReference: {fileID: 0}
+    - target: {fileID: 112220007993996133, guid: 9370e1c6418667d4288a69b9db1e373d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.89236563
+      objectReference: {fileID: 0}
+    - target: {fileID: 112220007993996133, guid: 9370e1c6418667d4288a69b9db1e373d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 112220007993996133, guid: 9370e1c6418667d4288a69b9db1e373d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 112220007993996133, guid: 9370e1c6418667d4288a69b9db1e373d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 112220007993996133, guid: 9370e1c6418667d4288a69b9db1e373d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 112220007993996133, guid: 9370e1c6418667d4288a69b9db1e373d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 112220007993996133, guid: 9370e1c6418667d4288a69b9db1e373d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 112220007993996133, guid: 9370e1c6418667d4288a69b9db1e373d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 112220007993996133, guid: 9370e1c6418667d4288a69b9db1e373d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2676595284654562683, guid: 9370e1c6418667d4288a69b9db1e373d, type: 3}
+      propertyPath: m_Name
+      value: Luces escena
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9370e1c6418667d4288a69b9db1e373d, type: 3}
 --- !u!1 &789115913
 GameObject:
   m_ObjectHideFlags: 0
@@ -1545,7 +1602,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.55
+  m_fontSize: 0.35
   m_fontSizeBase: 0.1
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1584,7 +1641,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0.19991314, y: 0.11631316, z: 0.17446983, w: 0.116313174}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -2911,3 +2968,4 @@ SceneRoots:
   - {fileID: 1409132183}
   - {fileID: 1830665374}
   - {fileID: 606170097}
+  - {fileID: 757798897}
