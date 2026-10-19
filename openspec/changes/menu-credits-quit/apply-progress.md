@@ -254,3 +254,137 @@ that leaked into the scene during editing was restored to the original shared fo
 | `openspec/changes/menu-credits-quit/apply-progress.md` | Modified | This section |
 
 Not committed (per instructions).
+
+---
+
+# Batch 3 — Re-add CRÉDITOS / SALIR after the animated-menu merge
+
+## Why the buttons had to be re-added
+
+A teammate landed an animated main menu (commit `e3b0f36 main menu`, reached `main` via
+merge `6d1baf1`) adding `Assets/mk/Main menu.anim`, `Main menu buttons.anim`,
+`Backdrop.controller` and `Buttons animations.controller`. The merge on
+`Assets/Scenes/Menu.unity` was resolved keeping the **incoming** side, which replaced the
+whole Canvas subtree and **dropped the two buttons added in Batch 1**.
+
+`Assets/Scripts/Menu/MenuController.cs` was already correct (`GoToCredits()`,
+`QuitGame()`, the `salirButton` field and the WebGL hide in `Start()`), so the only damage
+was in the scene: `CreditosButton` / `SalirButton` objects gone and
+`MenuController.salirButton` empty. Per constraints the script was **not touched** — only
+the scene was repaired.
+
+## Current layout found (before re-add)
+
+`Canvas` children (in order): `Title` (inactive), `Buttons animations` (Animator →
+`Buttons animations.controller`), `FadeOverlay`.
+
+- `Buttons animations` is a **wrapper group** the teammate added at canvas y = −165; the two
+  hero buttons are its children: `JugarButton` (local y −80) and `TutorialButton` (local
+  y −210). Effective canvas centres ≈ −245 and −375.
+- Measured in Play mode at 1920×1080: `JugarButton` screen centre (960, 295),
+  `TutorialButton` (960, 165) — i.e. TUTORIAL's bottom edge is only ~110 px from the screen
+  bottom.
+- Evidence: `screenshots/menu-before-readd.png`.
+
+## New placement (choice + rationale)
+
+**Bottom corners**, **not** a centered secondary row:
+
+| Button | Anchor / pivot | Anchored pos | Size | Image colour | Font |
+|---|---|---|---|---|---|
+| `CreditosButton` (`CRÉDITOS`) | bottom-left `(0,0)/(0,0)` | `(60, 50)` | 220×64 | RGBA(0.72, 0.30, 0.13) | LiberationSans SDF, 28 |
+| `SalirButton` (`SALIR`) | bottom-right `(1,0)/(1,0)` | `(-60, 50)` | 220×64 | RGBA(0.72, 0.30, 0.13) | LiberationSans SDF, 28 |
+
+Rationale: a centered row under TUTORIAL would have to sit inside the ~110 px strip above
+the screen bottom and visually collide with the huge animated hero group; corner-anchored
+utility buttons give breathing room, stay clear of the animated centre, remain pinned across
+aspect ratios (CanvasScaler match = 0.5), and read as secondary next to the two 400×110
+primary buttons (smaller size + slightly darker orange from the same family). They are
+direct `Canvas` children placed **before** `FadeOverlay` so the fade overlay still renders
+on top.
+
+Styling was inherited from `JugarButton`: same font asset (`LiberationSans SDF`, material
+`{fileID: 2180264}`), same `Button.transition`/`m_Colors`, same `Label` child structure.
+The `É` in `CRÉDITOS` uses the **static base** font — no new fallback glyphs baked.
+
+## Wiring (persistent `onClick`, verified in the saved scene)
+
+| Button | Target | Method | Persistent calls |
+|---|---|---|---|
+| `CreditosButton` | `Menu` (`MenuController`) | `GoToCredits` | 1 |
+| `SalirButton` | `Menu` (`MenuController`) | `QuitGame` | 1 |
+
+`MenuController.salirButton` = `SalirButton` (`UnityEngine.UI.Button`) → the WebGL hide in
+`Start()` works again.
+
+## Animator finding (task 3)
+
+**Cannot be hooked trivially → new buttons left STATIC.**
+
+- `Buttons animations.controller` has a single default state whose motion is the clip
+  `Main menu buttons.anim`. The clip is a **hardcoded keyframe clip** that animates only two
+  explicit transform paths: `JugarButton` and `TutorialButton` (attributes `m_IsActive`,
+  `m_Enabled`, image `m_Color.a`, and `.../Label` `m_fontColor.a`). It contains **no**
+  reference to any other child.
+- Therefore a new sibling/child is simply **not driven** by the Animator: it stays at its
+  authored values (visible, opaque). To animate it you would have to **add curves to
+  `Main menu buttons.anim`** — i.e. edit a teammate-owned asset, which is out of scope and
+  risky. So per the task's fallback branch the two new buttons are left **static**. They are
+  also kept as direct `Canvas` children (outside the `Buttons animations` subtree) so a
+  future extension of that clip cannot accidentally grab them.
+- **Observation for the teammate (not fixed — their asset):** the clip/state **loops**
+  (`normalizedTime` grew to 17.87 over a 2.33 s clip; both the buttons animator and the
+  backdrop `Main menu.anim` share length 2.33 s and run on the same clock). Net effect: the
+  logo reveal + both hero buttons **replay every ~2.33 s** (fade out then in) instead of
+  holding the intro's final frame. A `Clamp`/`Once` post-wrap on the intro curves would
+  likely be intended. This is the teammate's animation and was left untouched.
+
+## Validation evidence
+
+### Compile / console
+- `refresh_unity` (scope=all, compile=request) + `read_console` → **0 errors / 0 warnings**
+  from this change. The single remaining entry is the pre-existing infrastructure notice
+  `Account API did not become accessible within 30 seconds…`.
+- `git status` → only `Assets/Scenes/Menu.unity` (+ screenshots). `MenuController.cs`
+  **unchanged**; `LiberationSans SDF - Fallback.asset` **not** re-dirtied.
+- `git diff --stat Assets/Scenes/Menu.unity` → **543 insertions, 0 deletions** — purely
+  additive, so no teammate animation/controller data was removed or re-recorded.
+
+### Play mode — `Menu.unity`
+| Step | Observed |
+|---|---|
+| Enter play | Menu reveals; `JugarButton`/`TutorialButton` animate in as before, + `CRÉDITOS` (bottom-left) and `SALIR` (bottom-right) visible |
+| Screenshot | `screenshots/menu-final.png` — logo + JUGAR + TUTORIAL + CRÉDITOS + SALIR, all legible, consistent font |
+| Listener counts | `CreditosButton.onClick` → 1 call `GoToCredits`; `SalirButton.onClick` → 1 call `QuitGame` |
+| `MenuController.salirButton` | resolves to `SalirButton` |
+| `CreditosButton.onClick.Invoke()` | active scene changed `Menu` → **`Credits`** (next frame); `CreditsBody` present |
+| Back to Menu | `SceneManager.LoadScene("Menu")` → active scene `Menu` |
+| `Application.platform` | `WindowsEditor` |
+| `SalirButton` state | `activeSelf=True`, `activeInHierarchy=True` (Editor → button correctly shown) |
+| `SalirButton.onClick.Invoke()` | no exception; still `isPlaying=True`, scene `Menu` |
+
+> Clicks were exercised by invoking the persistent `onClick` event (the same listener the UI
+> raycast fires). The `EventSystem` pointer/raycast path itself was not driven with a
+> synthetic pointer event.
+
+### SALIR caveat — Editor no-op (explicit)
+`Application.Quit()` is a **NO-OP in the Unity Editor**. Invoking `SalirButton.onClick`
+(`QuitGame`) left Play mode running on `Menu`. The proof of correct wiring is therefore the
+persistent listener (`SalirButton` → `Menu (MenuController).QuitGame`) plus a clean
+invocation with no exception — **not** an actual application exit. Real quit only happens in
+a standalone player build.
+
+### WebGL hide — code path
+Not runtime-verified (no WebGL build in this session). Editor reports
+`Application.platform == WindowsEditor`, so the `RuntimePlatform.WebGLPlayer` branch is not
+exercised. The guard is null-safe on `salirButton` and only hides the button.
+
+## Files changed
+| File | Action | What |
+|---|---|---|
+| `Assets/Scenes/Menu.unity` | Modified | Re-added `CreditosButton` + `SalirButton` (bottom corners), `onClick` listeners, `MenuController.salirButton` ref |
+| `openspec/changes/menu-credits-quit/screenshots/menu-before-readd.png` | Created | Play-mode "before" (animated menu with the two buttons missing) |
+| `openspec/changes/menu-credits-quit/screenshots/menu-final.png` | Modified | Play-mode final menu with all four buttons |
+| `openspec/changes/menu-credits-quit/apply-progress.md` | Modified | This section |
+
+Not committed (per instructions).
