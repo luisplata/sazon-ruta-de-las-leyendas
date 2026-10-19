@@ -1,0 +1,351 @@
+fileFormatVersion: 2
+guid: b9bb626e56827d64c930af5b41c682ba
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4764466652127786665
+    second: llorona_0
+  - first:
+      213: 1012537158289881110
+    second: llorona_1
+  - first:
+      213: 9085305725971400669
+    second: llorona_2
+  - first:
+      213: -4036526340298612810
+    second: llorona_3
+  - first:
+      213: -5821959249972881522
+    second: llorona_4
+  - first:
+      213: -2770785026908438490
+    second: llorona_5
+  - first:
+      213: 4403124008707464075
+    second: llorona_6
+  - first:
+      213: -6179757882308707462
+    second: llorona_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: llorona_0
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 601
+        width: 76
+        height: 247
+      alignment: 9
+      pivot: {x: 0.6089143, y: 0.91890085}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7598ab7b2d631edb0800000000000000
+      internalID: -4764466652127786665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: llorona_1
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 679
+        width: 65
+        height: 175
+      alignment: 9
+      pivot: {x: 0.19755366, y: 0.9079614}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61870c94e214d0e00800000000000000
+      internalID: 1012537158289881110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: llorona_2
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 766
+        width: 64
+        height: 94
+      alignment: 9
+      pivot: {x: 0.7263379, y: 0.33489016}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd70958fb6d751e70800000000000000
+      internalID: 9085305725971400669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: llorona_3
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 694
+        width: 98
+        height: 174
+      alignment: 9
+      pivot: {x: 0.84841484, y: 0.8924669}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bf5eff0ea06bf7c0800000000000000
+      internalID: -4036526340298612810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: llorona_4
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 616
+        width: 303
+        height: 264
+      alignment: 9
+      pivot: {x: 0.23706004, y: 0.7743484}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e87119088ee343fa0800000000000000
+      internalID: -5821959249972881522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: llorona_5
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 210
+        width: 298
+        height: 380
+      alignment: 9
+      pivot: {x: 0.4166696, y: 0.1868715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 620c622c2b13c89d0800000000000000
+      internalID: -2770785026908438490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: llorona_6
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 116
+        width: 409
+        height: 400
+      alignment: 9
+      pivot: {x: 0.13823971, y: 0.8595532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8b900905f90b1d30800000000000000
+      internalID: 4403124008707464075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: llorona_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 281
+        height: 185
+      alignment: 9
+      pivot: {x: 0.92713, y: 0.88591}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7bb113a2f61d3aa0800000000000000
+      internalID: -6179757882308707462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5be3cf08e30490947991b1d2313fdc28
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      llorona_0: -4764466652127786665
+      llorona_1: 1012537158289881110
+      llorona_2: 9085305725971400669
+      llorona_3: -4036526340298612810
+      llorona_4: -5821959249972881522
+      llorona_5: -2770785026908438490
+      llorona_6: 4403124008707464075
+      llorona_7: -6179757882308707462
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
