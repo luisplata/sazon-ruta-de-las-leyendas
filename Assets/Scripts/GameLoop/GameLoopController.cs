@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
@@ -44,6 +45,16 @@ public class GameLoopController : MonoBehaviour
 
     [Tooltip("HUD label showing the run's coins (e.g. 'MONEDAS: 15'). Null = no-op.")] [SerializeField]
     TMP_Text coinsText;
+
+    [Tooltip(
+        "HUD hat icons for lives. Index 0 = top hat. A hat is shown while its index < lives, so the LAST entry (bottom hat) disappears first as lives drop. Nulls are skipped.")]
+    [SerializeField]
+    Image[] livesHats;
+
+    [Tooltip(
+        "HUD patience-bar segments, assigned BOTTOM→TOP = [red, yellow, green]. A segment is shown while its index < patience, so the LAST entry (top) disappears first — the bar drains from the top down and only the RED survives at patience 1. Nulls are skipped.")]
+    [SerializeField]
+    Image[] patienceSegments;
 
     [Tooltip("World-space player view (idle + one-shot anims). Null = no-op.")] [SerializeField]
     PlayerView playerView;
@@ -372,12 +383,22 @@ public class GameLoopController : MonoBehaviour
         FadeOut(onComplete);
     }
 
-    /// <summary>Refreshes the VIDAS / PACIENCIA / MONEDAS HUD labels (no-op when unwired).</summary>
+    /// <summary>
+    /// Refreshes the VIDAS / PACIENCIA / MONEDAS HUD labels plus the visual
+    /// indicators (no-ops when unwired). The hat icons drop as lives drop and
+    /// the patience-bar segments drain from the top down (the LAST array entry
+    /// hides first) — both driven by the same "index &lt; value" rule.
+    /// </summary>
     void UpdateHUD()
     {
         if (livesText != null) livesText.text = $"VIDAS: {_lives}";
         if (patienceText != null) patienceText.text = $"PACIENCIA: {_patience}";
         if (coinsText != null) coinsText.text = $"MONEDAS: {GameSession.coins}";
+
+        for (int i = 0; i < livesHats.Length; i++)
+            if (livesHats[i] != null) livesHats[i].gameObject.SetActive(i < _lives);
+        for (int i = 0; i < patienceSegments.Length; i++)
+            if (patienceSegments[i] != null) patienceSegments[i].gameObject.SetActive(i < _patience);
     }
 
     void FadeIn(Action onComplete = null)
