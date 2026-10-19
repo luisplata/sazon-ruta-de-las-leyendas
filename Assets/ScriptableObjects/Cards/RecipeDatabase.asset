@@ -14,4 +14,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RecipeDatabase
   levels:
   - {fileID: 11400000, guid: d0617c512bd9bc54e8a1f751009ca60f, type: 2}
-  - {fileID: 11400000, guid: 80eb5b2c894a8304292f12f314c685a8, type: 2}
