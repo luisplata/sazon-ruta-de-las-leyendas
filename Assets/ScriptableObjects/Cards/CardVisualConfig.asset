@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CardVisualConfig
   m_EditorClassIdentifier: Assembly-CSharp::CardVisualConfig
   maxHandSize: 5
-  cardSize: {x: 140, y: 200}
+  cardSize: {x: 180, y: 257}
   dealOrigin: {x: 280, y: -380}
   dealDuration: 0.5
   dealEasingCurve:
@@ -40,9 +40,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  parabolaStart: {x: -280, y: -300}
-  parabolaControl: {x: 0, y: -150}
-  parabolaEnd: {x: 280, y: -300}
+  parabolaStart: {x: -360, y: -390}
+  parabolaControl: {x: 0, y: -330}
+  parabolaEnd: {x: 360, y: -390}
   reLayoutDuration: 0.25
   reLayoutEasingCurve:
     serializedVersion: 2
@@ -100,6 +100,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   dragLiftScale: 1.12
   dragLiftOffset: {x: 0, y: 40}
+  hoverScale: 1.12
+  hoverDuration: 0.12
   centerDiscardDuration: 1
   centerDiscardMoveCurve:
     serializedVersion: 2

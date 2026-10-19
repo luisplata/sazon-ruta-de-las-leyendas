@@ -70,6 +70,12 @@ public class CardVisualConfig : ScriptableObject
     [Tooltip("Offset in canvas px applied above the pointer while dragging.")]
     public Vector2 dragLiftOffset = new Vector2(0f, 40f);
 
+    [Header("Hover")] [Tooltip("Scale multiplier while the mouse hovers a hand card.")]
+    public float hoverScale = 1.12f;
+
+    [Tooltip("Seconds for the hover scale-in/out tween.")]
+    public float hoverDuration = 0.12f;
+
     [Header("Center discard")] [Tooltip("Seconds for the center-zone discard (move + scale to 0).")]
     public float centerDiscardDuration = 1.0f;
 

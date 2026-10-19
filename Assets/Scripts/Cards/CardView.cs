@@ -10,7 +10,8 @@ using UnityEngine.UI;
 /// the UGUI drag handler family, whose pointerDrag capture keeps delivering
 /// events to this card even as it moves under the pointer.
 /// </summary>
-public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler,
+    IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] RectTransform rect;
     [SerializeField] CanvasGroup group;
@@ -29,6 +30,7 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     bool _parked;
     DropZone _zone;
     Coroutine _moveRoutine;
+    Coroutine _hoverRoutine;
 
     /// <summary>
     /// The data-driven identity assigned by SetData. Read by the cooking
@@ -140,6 +142,7 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     {
         _parked = true;
         _zone = zone;
+        StopHover(); // a hovered card must not fight the park scale (1 -> parked)
         StopMove();
         _moveRoutine = StartCoroutine(ParkTo(zone));
     }
@@ -152,6 +155,7 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     public void ConsumeFromZone()
     {
         _discarding = true;
+        StopHover();
         StopMove();
         group.blocksRaycasts = false;
         if (_zone != null && _zone.Kind == DropZone.ZoneKind.Center) StartCoroutine(DiscardCenter());
@@ -170,6 +174,7 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         if (_discarding) return;
         _discarding = true;
         _dragging = false; // a mid-drag card is leaving; ignore the rest of the drag
+        StopHover();       // the fly owns the scale from here on
         StopMove();
         group.blocksRaycasts = false;
         StartCoroutine(FlyLeftRoutine(targetAnchoredPos, _config.cornerDiscardDuration));
@@ -181,6 +186,11 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         // Any destination drag starts the grab reaction (design D1: grab fires
         // once at drag begin, regardless of where it ends).
         _playerView?.OnGrabCard();
+        // Cancel any hover (the pointer that entered this card now owns a drag):
+        // kill the hover scale routine and restore the exact slot order so the
+        // drag behaves exactly as it did before hover existed.
+        StopHover();
+        transform.SetSiblingIndex(_slotIndex);
         // Kill any in-flight move (deal-in / re-layout / return) BEFORE dragging:
         // the coroutine writes anchoredPosition every frame and would otherwise
         // fight OnDrag, keeping the card glued to the hand arc and making the
@@ -224,6 +234,61 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         }
 
         ReturnToSlot();
+    }
+
+    /// <summary>
+    /// Hover enter: scale up to hoverScale AND raise this card above its
+    /// overlapping neighbours (last sibling). Ignored mid-drag / parked /
+    /// discarding — those states own the card's transform. Position is NEVER
+    /// touched: anchoredPosition belongs to the hand slot system.
+    /// </summary>
+    public void OnPointerEnter(PointerEventData e)
+    {
+        if (_dragging || _parked || _discarding) return;
+        transform.SetAsLastSibling();
+        StartHover(_config.hoverScale);
+    }
+
+    /// <summary>
+    /// Hover exit: scale back to 1 AND restore the card's own slot sibling
+    /// index, so repeated hover/leave never drifts the fan order. Ignored
+    /// mid-drag / parked / discarding (their routines reset the scale).
+    /// </summary>
+    public void OnPointerExit(PointerEventData e)
+    {
+        if (_dragging || _parked || _discarding) return;
+        transform.SetSiblingIndex(_slotIndex);
+        StartHover(1f);
+    }
+
+    /// <summary>Starts a fresh scale-only hover tween to <paramref name="target"/>.</summary>
+    void StartHover(float target)
+    {
+        StopHover();
+        _hoverRoutine = StartCoroutine(ScaleTo(target, _config.hoverDuration));
+    }
+
+    /// <summary>
+    /// Eased scale-only tween (position untouched). Reuses the re-layout easing
+    /// curve so hover needs only hoverScale + hoverDuration as tunables.
+    /// </summary>
+    IEnumerator ScaleTo(float target, float duration)
+    {
+        float start = rect.localScale.x;
+        if (Mathf.Approximately(start, target))
+        {
+            rect.localScale = Vector3.one * target;
+            yield break;
+        }
+
+        for (float t = 0f; t < 1f; t += Time.deltaTime / Mathf.Max(duration, 0.0001f))
+        {
+            float p = Mathf.Clamp01(t);
+            rect.localScale = Vector3.one * Mathf.Lerp(start, target, _config.reLayoutEasingCurve.Evaluate(p));
+            yield return null;
+        }
+
+        rect.localScale = Vector3.one * target;
     }
 
     /// <summary>
@@ -351,6 +416,16 @@ public class CardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         {
             StopCoroutine(_moveRoutine);
             _moveRoutine = null;
+        }
+    }
+
+    /// <summary>Cancels the hover scale tween (leaves localScale where it is).</summary>
+    void StopHover()
+    {
+        if (_hoverRoutine != null)
+        {
+            StopCoroutine(_hoverRoutine);
+            _hoverRoutine = null;
         }
     }
 }
