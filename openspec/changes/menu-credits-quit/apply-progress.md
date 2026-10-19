@@ -119,3 +119,138 @@ credits. Reported only — the Credits scene was not modified per the task const
 | `openspec/changes/menu-credits-quit/screenshots/menu-final.png` | Created | Play-mode screenshot of the updated menu |
 
 Not committed (per instructions).
+
+---
+
+# Batch 2 — Credits body text (`CreditsBody`)
+
+Filled the placeholder credits text in `Assets/Scenes/Credits.unity`. **Text only** on the
+`CreditsBody` TMP component — no new objects, no anchors moved, `VolverButton` and `Title`
+untouched.
+
+## Previous text (before)
+
+```
+Sazón: Ruta de las Leyendas
+
+Gracias por jugar
+```
+
+(Not empty, but a placeholder: no team names or roles. Font `LiberationSans SDF`, 40 pt,
+white, centered, rect 1200×300, `Overflow` mode, `lineSpacing` 0.)
+
+## New text (after)
+
+```
+Sazón: Ruta de las Leyendas
+
+Gracias por jugar
+
+Enier Garcia
+Director de arte y animador
+
+Danet
+Art Concept artist
+
+PeryLoth
+Programación
+
+Camilo
+Música y SFX
+```
+
+Raw serialized value (`\n` = real newline, plain-text fallback):
+
+```
+Sazón: Ruta de las Leyendas\n\nGracias por jugar\n\nEnier Garcia\nDirector de arte y animador\n\nDanet\nArt Concept artist\n\nPeryLoth\nProgramación\n\nCamilo\nMúsica y SFX
+```
+
+## Rich text applied?
+
+**Yes.** The component already had `richText: true`, so the four names are bolded and the
+role lines are plain:
+
+- `<b>Enier Garcia</b>` / `Director de arte y animador`
+- `<b>Danet</b>` / `Art Concept artist`
+- `<b>PeryLoth</b>` / `Programación`
+- `<b>Camilo</b>` / `Música y SFX`
+
+Serialized text field stores the `<b>…</b>` tags. Spelling corrected as instructed:
+**arte**, **Programación**, **Música**; "Art Concept artist" kept as-is (English role title).
+Font / size / colour unchanged (LiberationSans SDF, 40, white).
+
+## Deviation — `lineSpacing` 0 → −34 (required to stop the overflow)
+
+The mandated content is 15 lines. At 40 pt with default spacing the block measures
+**688.6 px**, but there are only ~575 px between the `Title` glyph block (bottom ≈ y+804 in
+canvas space) and the `VolverButton` (top ≈ y+215). Measured clearances:
+
+| `lineSpacing` | block height | gap to Title | gap to Button | verdict |
+|---|---|---|---|---|
+| 0 (default) | 688.6 | **−80.1 (collides)** | **−19.3 (collides)** | fails |
+| −25 | 548.6 | −10.1 (collides) | +50.7 | fails |
+| −30 | 520.6 | +3.9 | +64.7 | too tight |
+| **−34 (applied)** | **498.2** | **+15.1** | **+75.9** | legible |
+| −40 | 464.6 | +31.9 | +92.7 | over-compressed |
+
+Evidence: `screenshots/credits-overflow-check.png` (default spacing — first line sits on top
+of the `CRÉDITOS` heading and "Música y SFX" is behind the button) vs
+`screenshots/credits-final.png` (with −34 — fully legible, no overlap).
+
+Font size, font, colour, anchors, rect and `VolverButton` were **not** changed. `lineSpacing`
+is a typographic property of the same TMP component (no object/asset added), and it is a
+one-field, easily reversible value. Flagged here because the task said "text only".
+
+## Screenshot
+
+`screenshots/credits-final.png` — Play mode on `Credits.unity` (960×540): `CRÉDITOS`
+heading, game title, "Gracias por jugar", the four bolded names + roles, and the
+`VOLVER AL MENÚ` button all legible with clear separation.
+`screenshots/credits-overflow-check.png` — kept as the "before" evidence for the spacing fix.
+
+## Font-asset status — `LiberationSans SDF - Fallback.asset`
+
+**Re-dirtied: YES — but NOT by the credits text.**
+
+- The credits accents (`ó` in *Sazón* / *Programación*, `ú` in *Música*) render from the
+  **base static** `LiberationSans SDF` asset (mode 0 = Static); no new glyphs were baked for
+  them.
+- The only glyph added to the dynamic fallback (mode 1) is **`→` U+2192 / `m_Unicode: 8594`**
+  — it comes from other project content (`Assets/Scenes/Legend.unity` and the three
+  `Assets/ScriptableObjects/Cards/LegendPage_*.asset` files), baked during a Play-mode
+  session in this batch, not by the credits change.
+- The asset also has `m_ClearDynamicDataOnBuild: 1`, so this pre-baked glyph data is
+  discarded on player build and rebaked at runtime anyway — the diff has no build value.
+- **Left re-dirtied** (not reverted) because it is outside this change's scope and reverting
+  could clobber a concurrent session's in-flight work. **The user decides whether to commit
+  it.** To drop it: `git checkout -- "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset"`.
+
+## Scope of the scene diff
+
+`git diff Assets/Scenes/Credits.unity` = **2 hunks, both on the `CreditsBody`
+`TextMeshProUGUI` MonoBehaviour**: `m_text` and `m_lineSpacing`. A TMP material *instance*
+that leaked into the scene during editing was restored to the original shared font material
+(`m_sharedMaterial` → `{fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee}`,
+`m_fontMaterial` → null), so no stray `Material` object remains.
+
+## Validation
+
+- `refresh_unity` (scope=all) + `read_console` → **0 errors / 0 warnings** from the change.
+  The single remaining entry is the pre-existing infrastructure notice:
+  `Account API did not become accessible within 30 seconds…` (unrelated to this change).
+- Play mode on `Credits.unity`: rendered correctly **both** before and after restoring the
+  shared material (identical output).
+- No compile errors; no scripts touched.
+- `git status` → only `Assets/Scenes/Credits.unity` + the two screenshots (untracked) + the
+  unrelated fallback font asset above.
+
+## Files changed
+
+| File | Action | What |
+|---|---|---|
+| `Assets/Scenes/Credits.unity` | Modified | `CreditsBody.m_text` = full credits; `m_lineSpacing` = −34; leaked TMP material instance reverted to the shared font material |
+| `openspec/changes/menu-credits-quit/screenshots/credits-final.png` | Created | Play-mode screenshot, final credits |
+| `openspec/changes/menu-credits-quit/screenshots/credits-overflow-check.png` | Created | Play-mode screenshot, default spacing overflow (evidence) |
+| `openspec/changes/menu-credits-quit/apply-progress.md` | Modified | This section |
+
+Not committed (per instructions).

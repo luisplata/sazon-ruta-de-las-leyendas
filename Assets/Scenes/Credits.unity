@@ -734,7 +734,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Saz\xF3n: Ruta de las Leyendas\n\nGracias por jugar"
+  m_text: "Saz\xF3n: Ruta de las Leyendas\n\nGracias por jugar\n\n<b>Enier Garcia</b>\nDirector
+    de arte y animador\n\n<b>Danet</b>\nArt Concept artist\n\n<b>PeryLoth</b>\nProgramaci\xF3n\n\n<b>Camilo</b>\nM\xFAsica
+    y SFX"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -774,7 +776,7 @@ MonoBehaviour:
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: -34
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
