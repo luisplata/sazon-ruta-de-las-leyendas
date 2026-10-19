@@ -22,7 +22,10 @@ public class LevelConfig : ScriptableObject
     [Tooltip("Exact recipes resolvable in this level (Star + Normal only).")]
     public List<RecipeData> recipes;
 
-    [Tooltip("Legend scene title (e.g. 'El Ahuizotl').")]
+    [Tooltip("Newspaper page for the Legend scene. Non-null ⇒ fills the 14 slots; null ⇒ legacy legendTitle/legendText.")]
+    public LegendPage legendPage;
+
+    [Tooltip("Legacy legend scene title (fallback when legendPage is null).")]
     public string legendTitle;
 
     [Tooltip("Legend scene body text. Empty ⇒ the Legend scene is skipped (auto-forwards to Market).")]

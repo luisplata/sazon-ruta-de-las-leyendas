@@ -17,6 +17,7 @@ MonoBehaviour:
   requiredIngredient: {fileID: 11400000, guid: 73ddc3817602f5f408165551adaec29f, type: 2}
   recipes:
   - {fileID: 11400000, guid: 2811a3305d09014489c295006d34f3e2, type: 2}
+  legendPage: {fileID: 11400000, guid: b5c3132d127ca03409bf904ddfa8abb0, type: 2}
   legendTitle: La Llorona
   legendText: "Una mujer vestida de blanco llora junto al r\xEDo. Dicen que busca
     a sus hijos... y que cocina para calmar su pena. Esta noche tiene antojo de un
@@ -27,3 +28,5 @@ MonoBehaviour:
   background: {fileID: 0}
   midground: {fileID: 0}
   enemyArt: {fileID: 0}
+  enemyPrefab: {fileID: 0}
+  foreground: {fileID: 0}

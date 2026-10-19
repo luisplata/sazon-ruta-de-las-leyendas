@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e954df5c517ea2745b4d3c07cd26e689, type: 3}
+  m_Name: LegendPage_Level0Llorona
+  m_EditorClassIdentifier: Sazon.LegendPage::LegendPage
+  masthead: EL PREGONERO PUEBLERO
+  dateline: "A\xF1o XIII - No. 3 - Santa Mar\xEDa de los Ma\xEDces - Precio: 1 Real"
+  headline: "\xBFQUI\xC9N CALMA A LA LLORONA?"
+  subhead: "La mujer del r\xEDo no llora por sus hijos... \xA1llora de hambre!"
+  reportHeader: "REPORTE LOCAL: LLANTO EN EL R\xCDO"
+  reportBody: 'Vecinos aseguran que el llanto de esta noche es distinto: la Llorona
+    busca un plato que le devuelva la calma.'
+  demandsHeader: EXIGENCIAS CULINARIAS DEL MONSTRUO
+  adviceHeader: CONSEJO DE COCINA DEL CURANDERO
+  adviceBody: "Dicen que con un solo plato bien preparado basta. Arrastra las cartas
+    a la olla (zona azul) y pulsa PREPARAR: el tutorial te gu\xEDa paso a paso."
+  sidebarBlock1: 'SE BUSCA: Aprendices de cocina sin miedo al llanto.'
+  sidebarBlock2: "EL HOR\xD3SCOPO R\xCDO-PUEBLO: Piscis - Escuche el r\xEDo, no lo
+    cruce."
+  sidebarBlock3: "OPORTUNIDAD: Lote de 3 cartas de ma\xEDz, poco uso. Preguntar por
+    Don Pedro."
+  footer: "P\xC1GINA SIGUIENTE \u2192"

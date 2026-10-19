@@ -22,6 +22,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f10e0b773118f02469cf999c4fed516b, type: 2}
   - {fileID: 11400000, guid: 065aa033beaff124bb4e696f874ed56a, type: 2}
   - {fileID: 11400000, guid: 2811a3305d09014489c295006d34f3e2, type: 2}
+  legendPage: {fileID: 11400000, guid: bdac36f91d7dff2488fc90fd217b9eab, type: 2}
   legendTitle: El Ahuizotl
   legendText: "El Ahuizotl, peque\xF1o perro del agua con una mano en la cola, arrastra
     a sus v\xEDctimas al fondo del r\xEDo. Pero esta noche no quiere carne: tiene

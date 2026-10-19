@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e954df5c517ea2745b4d3c07cd26e689, type: 3}
+  m_Name: LegendPage_Level1Mexico
+  m_EditorClassIdentifier: Sazon.LegendPage::LegendPage
+  masthead: EL PREGONERO PUEBLERO
+  dateline: "A\xF1o XIII - No. 4 - Santa Mar\xEDa de los Ma\xEDces - Precio: 1 Real"
+  headline: "\xA1LA CRIATURA DEL R\xCDO EXIGE TACOS!"
+  subhead: "El Ahuizotl depone las armas... \xA1pero pide antojitos!"
+  reportHeader: 'REPORTE LOCAL: AVISTAMIENTO CONFIRMADO'
+  reportBody: "Unos arrieros afirman haber visto al m\xEDtico perro del agua con
+    un hambre ins\xF3lita."
+  demandsHeader: EXIGENCIAS CULINARIAS DEL MONSTRUO
+  adviceHeader: CONSEJO DE COCINA DEL CURANDERO
+  adviceBody: "Para calmar sus apetitos, se dice que mezclar tres ingredientes clave
+    (representados por cartas de arriero, \xA1juega tus cartas!) en una olla especial,
+    y \"prepararla\" con paciencia y oraci\xF3n (o simplemente un buen \"Preparar\")
+    podr\xEDa salvarnos a todos. \xA1Un buen plato calma al monstruo!"
+  sidebarBlock1: "SE BUSCA: Cocineros valientes con experiencia en antojitos de ma\xEDz."
+  sidebarBlock2: "EL HOR\xD3SCOPO R\xCDO-PUEBLO: Piscis - Cuidado al cruzar el vado."
+  sidebarBlock3: "OPORTUNIDAD: Lote de 3 cartas de ingrediente de ma\xEDz, poco uso.
+    Preguntar por Don Pedro."
+  footer: "P\xC1GINA SIGUIENTE \u2192"
