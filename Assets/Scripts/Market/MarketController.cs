@@ -20,11 +20,14 @@ public class MarketController : MonoBehaviour
     [Tooltip("Coins label (TMP), e.g. 'MONEDAS: 20'.")]
     [SerializeField] TMP_Text coinsLabel;
 
-    [Tooltip("Inactive buy-button template; one instance per catalog item is spawned into catalogRoot.")]
+    [Tooltip("Inactive buy-button template; one instance is spawned per catalog item (into the matching product slot, or catalogRoot as fallback).")]
     [SerializeField] Button buyButtonTemplate;
 
-    [Tooltip("Root transform the spawned buy buttons are parented to.")]
+    [Tooltip("Root transform the spawned buy buttons are parented to (fallback when no productSlots are set).")]
     [SerializeField] Transform catalogRoot;
+
+    [Tooltip("Optional art-driven product slots. When set, the i-th catalog product is spawned as a child of slots[i] and stretched to fill its rect. Empty/unassigned → fall back to catalogRoot.")]
+    [SerializeField] List<RectTransform> productSlots = new();
 
     [Tooltip("Full-screen black overlay; the market reveals behind the fade-in.")]
     [SerializeField] FadeController fade;
@@ -47,10 +50,33 @@ public class MarketController : MonoBehaviour
     void Start()
     {
         var config = CurrentMarket();
-        if (config != null && config.items != null)
+        var items = config != null ? config.items : null;
+
+        if (items != null)
         {
-            foreach (var item in config.items)
-                if (item != null && item.card != null) SpawnButton(item);
+            bool useSlots = productSlots != null && productSlots.Count > 0;
+
+            // Overflow guard: never spawn more products than there are slots.
+            if (useSlots)
+            {
+                int validCount = 0;
+                foreach (var item in items)
+                    if (item != null && item.card != null) validCount++;
+
+                if (validCount > productSlots.Count)
+                    Debug.LogWarning($"[MarketController] {validCount} catalog items but only " +
+                                     $"{productSlots.Count} product slots — spawning {productSlots.Count}, " +
+                                     $"dropping {validCount - productSlots.Count}.");
+            }
+
+            int slotIndex = 0;
+            foreach (var item in items)
+            {
+                if (item == null || item.card == null) continue;
+                if (useSlots && slotIndex >= productSlots.Count) break; // leftover slots stay empty
+                SpawnButton(item, slotIndex);
+                slotIndex++;
+            }
         }
 
         Refresh();
@@ -83,16 +109,36 @@ public class MarketController : MonoBehaviour
     }
 
     /// <summary>
-    /// Instantiates one buy button from the inactive template into
-    /// catalogRoot and labels it "{displayName} {icon} x{quantity} ${price}".
-    /// No-op when the template or root is unwired.
+    /// Instantiates one buy button from the inactive template and labels it
+    /// "{displayName} {icon} x{quantity} ${price}". When <paramref name="slotIndex"/>
+    /// maps to a configured product slot, the instance is parented to that slot and
+    /// stretched to fill its rect (anchorMin=(0,0), anchorMax=(1,1), sizeDelta=0,
+    /// anchoredPosition=0) so the designer controls size by sizing the slot.
+    /// Otherwise it falls back to catalogRoot (stacked, unchanged legacy behaviour).
+    /// No-op when both the slot and the fallback root are unwired.
     /// </summary>
-    void SpawnButton(MarketConfig.MarketItem item)
+    void SpawnButton(MarketConfig.MarketItem item, int slotIndex)
     {
-        if (buyButtonTemplate == null || catalogRoot == null) return;
+        if (buyButtonTemplate == null) return;
 
-        var button = Instantiate(buyButtonTemplate, catalogRoot);
+        RectTransform slot = (productSlots != null && slotIndex >= 0 && slotIndex < productSlots.Count)
+            ? productSlots[slotIndex]
+            : null;
+
+        Transform parent = slot != null ? slot : catalogRoot;
+        if (parent == null) return;
+
+        var button = Instantiate(buyButtonTemplate, parent);
         button.gameObject.SetActive(true);
+
+        if (slot != null && button.transform is RectTransform rt)
+        {
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = Vector2.zero;
+            rt.sizeDelta = Vector2.zero;
+        }
 
         var label = button.GetComponentInChildren<TMP_Text>();
         if (label != null)
