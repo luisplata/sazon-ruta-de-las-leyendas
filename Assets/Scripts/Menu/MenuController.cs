@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// Boot scene controller: reveals the menu with a fade-in, and starts a fresh
@@ -26,12 +27,23 @@ public class MenuController : MonoBehaviour
     [SerializeField] int tutorialStartCoins = 20;
 
     /// <summary>
+    /// SALIR button. Hidden on WebGL in Start: a browser page cannot close its
+    /// own tab, so Application.Quit() is a no-op there and a dead button is
+    /// worse than none. In the Editor the platform is WindowsEditor, so the
+    /// button stays visible for testing.
+    /// </summary>
+    [SerializeField] Button salirButton;
+
+    /// <summary>
     /// Intro reveal: black → transparent. Runs in Start so
     /// FadeController.Awake has already forced the overlay opaque first.
     /// </summary>
     void Start()
     {
         if (fade != null) fade.FadeIn();
+
+        if (Application.platform == RuntimePlatform.WebGLPlayer && salirButton != null)
+            salirButton.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -60,5 +72,22 @@ public class MenuController : MonoBehaviour
         GameSession.tutorialLevel = tutorialConfig;
         GameSession.coins = tutorialStartCoins;
         SceneManager.LoadScene(Scenes.TutorialLegend);
+    }
+
+    /// <summary>
+    /// CRÉDITOS: loads the Credits scene. Wired to the button's onClick.
+    /// </summary>
+    public void GoToCredits()
+    {
+        SceneManager.LoadScene(Scenes.Credits);
+    }
+
+    /// <summary>
+    /// SALIR: closes the game. No-op in the Editor and on WebGL (the button is
+    /// hidden there in Start).
+    /// </summary>
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }
